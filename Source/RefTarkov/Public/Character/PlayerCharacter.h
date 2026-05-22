@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "Character/MinionCharacterBase.h"
 #include "InputActionValue.h"
 #include "PlayerCharacter.generated.h"
 
 class UInputAction;
 
 UCLASS()
-class REFTARKOV_API APlayerCharacter : public ACharacter
+class REFTARKOV_API APlayerCharacter : public AMinionCharacterBase
 {
 	GENERATED_BODY()
 
@@ -42,22 +42,26 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> AttackAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> ReloadAction;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
-	float WeaponDamage = 35;
+	TSubclassOf<class AWeaponBase> DefaultWeaponClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
-	float WeaponRange = 1000;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Weapon")
+	TObjectPtr<class AWeaponBase> CurrentWeapon;
+
+	FVector CachedMouseGroundLocation = FVector::ZeroVector;
+
 protected:
 	void Move(const FInputActionValue& Value);
+	void OnFireInput();
+	void OnReloadInput();
 
 protected:
-	/*UFUNCTION(BlueprintImplementableEvent, Category = "Weapon|Effects")
-	void PlayShootEffects(FVector TraceStart, FVector TraceEnd, bool bHit, FVector HitLocation);*/
-
-	void Shoot();
+	virtual void HandleDeath(class UHealthComponent* HealthComp, AController* Killer) override;
 
 private:
-	// 마우스 방향을 바라보도록.
-	void LookAtMouseCursor();
+	void UpdateAimFromMouse();
 };
