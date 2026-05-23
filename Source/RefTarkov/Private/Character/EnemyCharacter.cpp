@@ -11,6 +11,8 @@ AEnemyCharacter::AEnemyCharacter()
 {
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	TeamId = 1; // Àû ÆÀ
 }
 
 bool AEnemyCharacter::PerformMeleeAttack()

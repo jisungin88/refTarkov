@@ -35,6 +35,8 @@ APlayerCharacter::APlayerCharacter()
 	TopDownCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	TopDownCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCamera->bUsePawnControlRotation = false; // 컨트롤러 회전 비활성화
+
+	TeamId = 0;
 }
 
 void APlayerCharacter::BeginPlay()

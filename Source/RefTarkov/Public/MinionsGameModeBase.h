@@ -14,4 +14,6 @@ class REFTARKOV_API AMinionsGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
 };

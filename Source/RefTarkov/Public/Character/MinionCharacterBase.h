@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GenericTeamAgentInterface.h"
 #include "MinionCharacterBase.generated.h"
 
 class UHealthComponent;
@@ -13,17 +14,22 @@ class UHealthComponent;
  * 인스턴스화 불가(Abstract). BP에서 새 인스턴스 만들면 에디터가 막는다.
  */
 UCLASS(Abstract)
-class REFTARKOV_API AMinionCharacterBase : public ACharacter
+class REFTARKOV_API AMinionCharacterBase : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
 public:
 	AMinionCharacterBase();
 
+	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; }
+
 protected:
 	virtual void BeginPlay() override;
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Team", meta = (ClampMin = "0", ClampMax = "254"))
+	uint8 TeamId = 1;  // 0은 플레이어, 254는 "모든 팀". 기본값은 1 (적).
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UHealthComponent> HealthComp;
 
