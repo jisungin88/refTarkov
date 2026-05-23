@@ -7,6 +7,7 @@
 #include "Perception/AISense_Sight.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BlackboardData.h"
+#include "Character/EnemyCharacter.h"
 
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
 
@@ -51,6 +52,15 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	{
 		UBlackboardComponent* BBComp = nullptr;
 		UseBlackboard(BlackboardAsset, BBComp);
+	}
+
+	// BT 시작
+	if (AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(InPawn))
+	{
+		if (UBehaviorTree* BT = Enemy->GetBehaviorTree())
+		{
+			RunBehaviorTree(BT);
+		}
 	}
 }
 
