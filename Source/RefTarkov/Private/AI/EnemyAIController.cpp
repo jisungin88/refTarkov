@@ -7,6 +7,8 @@
 #include "Perception/AISense_Sight.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BlackboardData.h"
+#include "Character/EnemyCharacter.h"
+#include "GenericTeamAgentInterface.h"
 
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
 
@@ -25,8 +27,8 @@ AEnemyAIController::AEnemyAIController()
 	SightConfig->AutoSuccessRangeFromLastSeenLocation = 600.f;
 
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
-	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+	SightConfig->DetectionByAffiliation.bDetectNeutrals = false;
+	SightConfig->DetectionByAffiliation.bDetectFriendlies = false;
 
 	AIPerception->ConfigureSense(*SightConfig);
 	AIPerception->SetDominantSense(UAISense_Sight::StaticClass());
@@ -47,10 +49,24 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	if (IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(InPawn))
+	{
+		SetGenericTeamId(TeamAgent->GetGenericTeamId());
+	}
+
 	if (BlackboardAsset)
 	{
 		UBlackboardComponent* BBComp = nullptr;
 		UseBlackboard(BlackboardAsset, BBComp);
+	}
+
+	// BT 시작
+	if (AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(InPawn))
+	{
+		if (UBehaviorTree* BT = Enemy->GetBehaviorTree())
+		{
+			RunBehaviorTree(BT);
+		}
 	}
 }
 
