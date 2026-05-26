@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "WeaponTypes.h"
+#include "Types/WeaponTypes.h"
 #include "WeaponDataAsset.generated.h"
 
 UCLASS(BlueprintType)
@@ -51,7 +51,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory",
 		meta = (ClampMin = "0.0"))
-	float Weight = 3;
+	float WeightKg = 3;
 
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{

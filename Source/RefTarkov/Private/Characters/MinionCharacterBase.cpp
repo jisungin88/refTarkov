@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Character/MinionCharacterBase.h"
-#include "Health/HealthComponent.h"
+#include "Characters/MinionCharacterBase.h"
+#include "Components/HealthComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"

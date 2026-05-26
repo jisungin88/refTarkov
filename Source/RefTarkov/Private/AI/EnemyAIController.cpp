@@ -7,7 +7,7 @@
 #include "Perception/AISense_Sight.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BlackboardData.h"
-#include "Character/EnemyCharacter.h"
+#include "Characters/EnemyCharacter.h"
 #include "GenericTeamAgentInterface.h"
 
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));

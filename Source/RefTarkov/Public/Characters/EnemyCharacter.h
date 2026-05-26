@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Character/MinionCharacterBase.h"
+#include "Characters/MinionCharacterBase.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "EnemyCharacter.generated.h"
 

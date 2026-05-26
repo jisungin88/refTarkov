@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Character/EnemyCharacter.h"
+#include "Characters/EnemyCharacter.h"
 #include "AI/EnemyAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DamageEvents.h"

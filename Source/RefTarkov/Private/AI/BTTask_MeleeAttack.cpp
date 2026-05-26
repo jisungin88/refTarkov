@@ -3,7 +3,7 @@
 
 #include "AI/BTTask_MeleeAttack.h"
 #include "AIController.h"
-#include "Character/EnemyCharacter.h"
+#include "Characters/EnemyCharacter.h"
 
 UBTTask_MeleeAttack::UBTTask_MeleeAttack()
 {

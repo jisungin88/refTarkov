@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Health/HealthComponent.h"
+#include "Components/HealthComponent.h"
 #include "GameFramework/Actor.h"
-
+ 
 UHealthComponent::UHealthComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
