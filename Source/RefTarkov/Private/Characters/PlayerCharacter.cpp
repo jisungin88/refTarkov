@@ -13,6 +13,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Components/DebugComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -37,6 +38,8 @@ APlayerCharacter::APlayerCharacter()
 	TopDownCamera->bUsePawnControlRotation = false; // 컨트롤러 회전 비활성화
 
 	TeamId = 0;
+
+	DebugComp = CreateDefaultSubobject<UDebugComponent>(TEXT("Debug Component"));
 }
 
 void APlayerCharacter::BeginPlay()
