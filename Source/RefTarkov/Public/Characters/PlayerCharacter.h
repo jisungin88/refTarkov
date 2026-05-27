@@ -33,8 +33,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	TObjectPtr<class UCameraComponent> TopDownCamera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Debug")
-	TObjectPtr<class UDebugComponent> DebugComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<class UInventoryComponent> InventoryComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<class UInputMappingContext> DefaultMappingContext;

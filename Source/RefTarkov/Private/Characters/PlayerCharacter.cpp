@@ -13,8 +13,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-#include "Components/DebugComponent.h"
-
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -39,7 +37,7 @@ APlayerCharacter::APlayerCharacter()
 
 	TeamId = 0;
 
-	DebugComp = CreateDefaultSubobject<UDebugComponent>(TEXT("Debug Component"));
+	InventoryComp = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 }
 
 void APlayerCharacter::BeginPlay()

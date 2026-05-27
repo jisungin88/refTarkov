@@ -2,12 +2,26 @@
 
 
 #include "MinionsPlayerController.h"
+#include "Managers/MinionsCheatManager.h"
+#include "UObject/ConstructorHelpers.h"
 
 AMinionsPlayerController::AMinionsPlayerController()
 {
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
+
+	
+
+	static ConstructorHelpers::FClassFinder<UCheatManager> CheatBPClass(TEXT("/Game/BP_MinionsCheatManager"));
+	if (CheatBPClass.Succeeded())
+	{
+		CheatClass = CheatBPClass.Class;
+	}
+	else
+	{
+		CheatClass = UMinionsCheatManager::StaticClass();
+	}
 }
 
 void AMinionsPlayerController::BeginPlay()
@@ -19,4 +33,5 @@ void AMinionsPlayerController::BeginPlay()
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	InputMode.SetHideCursorDuringCapture(false);
 	SetInputMode(InputMode);
+
 }
