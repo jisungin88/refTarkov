@@ -3,7 +3,7 @@
 #include "Managers/MinionsCheatManager.h"
 #include "DataAssets/ItemDataAsset.h"
 #include "Components/InventoryComponent.h"
-#include "Items/ItemInstance.h"              
+#include "Inventory/Items/ItemInstance.h"              
 #include "GameFramework/PlayerController.h"  
 
 void UMinionsCheatManager::DebugAddItem(FName Name, int32 Quantity)

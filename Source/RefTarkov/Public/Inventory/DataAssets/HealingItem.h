@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAssets/ConsumableItem.h"
+#include "Inventory/DataAssets/ConsumableItem.h"
 #include "HealingItem.generated.h"
 
 UCLASS(BlueprintType)

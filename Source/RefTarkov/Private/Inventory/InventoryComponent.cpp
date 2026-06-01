@@ -1,13 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Components/InventoryComponent.h"
-#include "DataAssets/ItemDataAsset.h"
+#include "Inventory/InventoryComponent.h"
+#include "Inventory/DataAssets/ItemDataAsset.h"
 
 UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
-
 
 void UInventoryComponent::BeginPlay()
 {
@@ -17,7 +16,9 @@ void UInventoryComponent::BeginPlay()
 
 bool UInventoryComponent::TryAddItem(const UItemDataAsset* ItemDef, int32 Quantity, int32& OutRemainder)
 {
-	if (ItemDef == nullptr || Quantity <= 0)
+	return Container ? Container->TryAddItem(ItemDef, Quantity, OutRemainder) : false;
+	
+	/*if (ItemDef == nullptr || Quantity <= 0)
 	{
 		OutRemainder = Quantity;
 		return false;
@@ -61,7 +62,7 @@ bool UInventoryComponent::TryAddItem(const UItemDataAsset* ItemDef, int32 Quanti
 			bChanged = true;
 			OnSlotChanged.Broadcast(i);
 
-			if (Remaining <= 0) 
+			if (Remaining <= 0)
 				break;
 		}
 	}
@@ -72,7 +73,7 @@ bool UInventoryComponent::TryAddItem(const UItemDataAsset* ItemDef, int32 Quanti
 		OnInventoryChanged.Broadcast();
 	}
 
-	return bChanged;
+	return bChanged;*/
 }
 
 bool UInventoryComponent::CanAccept(const UItemDataAsset* ItemDef, int32 Quantity) const
