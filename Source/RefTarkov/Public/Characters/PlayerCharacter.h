@@ -48,6 +48,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> ReloadAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> InteractAction;
+	
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
+	TObjectPtr<class USphereComponent> InteractionSphere;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "Interaction")
+	TArray<TObjectPtr<AActor>> OverlappingInteractables;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "Interaction")
+	TWeakObjectPtr<AActor> CurrentFocusedInteractable;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<class AWeaponBase> DefaultWeaponClass;
@@ -63,8 +76,22 @@ protected:
 	void OnReloadInput();
 
 protected:
+	UFUNCTION()
+	void OnInteractSphereBeginOverlap(UPrimitiveComponent* Overlapped, AActor* Other,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Sweep);
+
+	UFUNCTION()
+	void OnInteractSphereEndOverlap(UPrimitiveComponent* Overlapped, AActor* Other,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	void OnInteract();
+	AActor* GetBestInteractable() const;
+
+protected:
 	virtual void HandleDeath(class UHealthComponent* HealthComp, AController* Killer) override;
 
 private:
 	void UpdateAimFromMouse();
+
+	void UpdateInteractableFocus();
 };
