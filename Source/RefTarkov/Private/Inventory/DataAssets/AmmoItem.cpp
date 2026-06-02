@@ -3,3 +3,4 @@
 
 #include "Inventory/DataAssets/AmmoItem.h"
 
+const FPrimaryAssetType UAmmoItem::ItemType("Ammo");

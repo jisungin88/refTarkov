@@ -10,7 +10,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSlotChanged, 
 	int32, SlotIndex);
 
-class FItemInstance;
+struct FItemInstance;
+class UItemDataAsset;
 
 UCLASS(BlueprintType)
 class REFTARKOV_API UInventoryContainer : public UObject
@@ -39,7 +40,6 @@ public:
 	const TArray<FItemInstance>& GetSlots() const { return Slots; }
 
 	bool SetMaxSlots(int32 NewMaxSlots);
-	//void SetSort();
 
 	UPROPERTY(BlueprintAssignable)
 	FOnInventoryChanged OnInventoryChanged;

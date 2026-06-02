@@ -7,6 +7,18 @@
 #include "Loot/Interactable.h"
 #include "LootContainerActor.generated.h"
 
+USTRUCT(BlueprintType)
+struct FInitialLootEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSoftObjectPtr<class UItemDataAsset> ItemDef;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = 1))
+	int32 Quantity = 1;
+};
+
 UCLASS()
 class REFTARKOV_API ALootContainerActor : public AActor, public IInteractable
 {
@@ -42,4 +54,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<class UUserWidget> PromptWidgetClass;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Loot")
+	TObjectPtr<class UInventoryContainer> LootContainer;
+
+	UPROPERTY(EditAnywhere, Category = "Loot")
+	TArray<FInitialLootEntry> InitialLoot;
+
+	UPROPERTY(EditAnywhere, Category = "Loot")
+	TSoftObjectPtr<class ULootTableDataAsset> LootTable;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Loot", meta = (ClampMin = "1"))
+	int32 ContainerSlotCount = 16;
 };

@@ -1,8 +1,8 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Managers/MinionsCheatManager.h"
-#include "DataAssets/ItemDataAsset.h"
-#include "Components/InventoryComponent.h"
+#include "Inventory/DataAssets/ItemDataAsset.h"
+#include "Inventory/InventoryComponent.h"
 #include "Inventory/Items/ItemInstance.h"              
 #include "GameFramework/PlayerController.h"  
 

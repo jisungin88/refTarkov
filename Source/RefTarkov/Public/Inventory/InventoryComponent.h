@@ -7,7 +7,7 @@
 #include "Inventory/Items/ItemInstance.h"
 #include "InventoryComponent.generated.h"
 
-class UItemDataAsset
+class UItemDataAsset;
 
 UCLASS( ClassGroup=(Inventory), meta=(BlueprintSpawnableComponent) )
 class REFTARKOV_API UInventoryComponent : public UActorComponent
