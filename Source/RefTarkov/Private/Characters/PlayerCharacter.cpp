@@ -14,6 +14,8 @@
 #include "Weapons/WeaponBase.h"
 #include "Loot/Interactable.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "MinionsGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -146,6 +148,12 @@ void APlayerCharacter::HandleDeath(class UHealthComponent* HealthComponent, ACon
 		CurrentWeapon->SetActorHiddenInGame(true);
 		CurrentWeapon->SetActorEnableCollision(false);
 	}
+
+	if (AMinionsGameModeBase* GM = Cast<AMinionsGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	{
+		GM->NotifyRaidFailed(this);
+	}
+
 	// TODO 사운드/파티클/실패처리
 }
 

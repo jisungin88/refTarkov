@@ -21,6 +21,9 @@ public:
 	UFUNCTION(Exec, Category = "Debug")
 	void DebugDumpInventory();
 
+	UFUNCTION(Exec, Category = "Debug")
+	void DebugDumpStash();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Debug")
 	TMap<FName, TSoftObjectPtr<class UItemDataAsset>> DebugItemTable;

@@ -5,6 +5,7 @@
 #include "Inventory/InventoryComponent.h"
 #include "Inventory/Items/ItemInstance.h"              
 #include "GameFramework/PlayerController.h"  
+#include "Inventory/StashSubsystem.h"
 
 void UMinionsCheatManager::DebugAddItem(FName Name, int32 Quantity)
 {
@@ -86,6 +87,33 @@ void UMinionsCheatManager::DebugDumpInventory()
 			*StaticEnum<EItemRarity>()->GetValueAsString(Slots[i].ItemDef->Rarity)
         );
         
+    }
+}
+
+void UMinionsCheatManager::DebugDumpStash()
+{
+    UStashSubsystem* Stash = GetWorld()->GetGameInstance()->GetSubsystem<UStashSubsystem>();
+    if (!Stash) return;
+
+    UE_LOG(LogTemp, Display, TEXT("=== Stash Dump ==="));
+    //UE_LOG(LogTemp, Display, TEXT("Free Slots: %d"), Stash->GetSlots().Num() - 사용중);
+    const TArray<FItemInstance>& Slots = Stash->GetSlots();
+    for (int32 i = 0; i < Slots.Num(); ++i)
+    {
+        if (Slots[i].IsEmpty())
+        {
+            UE_LOG(LogTemp, Display, TEXT("[%d] <empty>"), i);
+            continue;
+        }
+
+        UE_LOG(LogTemp, Display, TEXT("[%d]%s:%s, %.1f, %d, %s"), i,
+            *Slots[i].ItemDef->DisplayName.ToString(),
+            *Slots[i].ItemDef->Description.ToString(),
+            Slots[i].ItemDef->WeightKg,
+            Slots[i].ItemDef->MaxStackSize,
+            *StaticEnum<EItemRarity>()->GetValueAsString(Slots[i].ItemDef->Rarity)
+        );
+
     }
 }
 
