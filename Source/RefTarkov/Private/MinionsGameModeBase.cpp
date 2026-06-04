@@ -6,6 +6,12 @@
 #include "Inventory/StashSubsystem.h"
 #include "GameFramework/PlayerController.h"
 #include "GenericTeamAgentInterface.h"
+#include "MinionsPlayerState.h"
+
+AMinionsGameModeBase::AMinionsGameModeBase()
+{
+	PlayerStateClass = AMinionsPlayerState::StaticClass();
+}
 
 void AMinionsGameModeBase::BeginPlay()
 {
@@ -20,6 +26,15 @@ void AMinionsGameModeBase::BeginPlay()
 		else
 			return ETeamAttitude::Hostile;
 	});
+
+	
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	{
+		if (AMinionsPlayerState* PS = PC->GetPlayerState<AMinionsPlayerState>())
+		{
+			PS->RaidStats->StartRaid();
+		}
+	}
 
     OnRaidEnded.AddDynamic(this, &AMinionsGameModeBase::HandleRaidEnded_TransferStash);
 }
@@ -56,6 +71,14 @@ void AMinionsGameModeBase::EndRaid(APlayerCharacter* Player, ERaidEndReason Reas
 		}
 	}
 
+	if (Player)
+	{
+		if (AMinionsPlayerState* PS = Player->GetPlayerState<AMinionsPlayerState>())
+		{
+			PS->RaidStats->EndRaid(Reason);
+		}
+	}
+
 	OnRaidEnded.Broadcast(Player, Reason);
 }
 
@@ -79,5 +102,5 @@ void AMinionsGameModeBase::HandleRaidEnded_TransferStash(APlayerCharacter* Playe
 		return;
 
 	Stash->TransferFromInventory(Container);
-	UE_LOG(LogTemp, Display, TEXT("[Raid] Stash trasfer complete"));
+	UE_LOG(LogTemp, Display, TEXT("[Raid] Stash transfer complete"));
 }
