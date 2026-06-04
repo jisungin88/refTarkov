@@ -26,7 +26,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	// ƒ´∏ﬁ∂Û ºº∆√
+	// Ïπ¥Î©îÎùº ÏÑ∏ÌåÖ
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	TObjectPtr<class USpringArmComponent> CameraBoom;
 
@@ -89,6 +89,10 @@ protected:
 
 protected:
 	virtual void HandleDeath(class UHealthComponent* HealthComp, AController* Killer) override;
+
+protected:
+	UFUNCTION()
+	void OnInventoryItemAdded(UItemDataAsset* ItemDef, int32 Quantity);
 
 private:
 	void UpdateAimFromMouse();

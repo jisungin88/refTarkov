@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,6 +8,9 @@
 #include "InventoryComponent.generated.h"
 
 class UItemDataAsset;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemAddedToInventory,
+	UItemDataAsset*, ItemDef, int32, Quantity);
 
 UCLASS( ClassGroup=(Inventory), meta=(BlueprintSpawnableComponent) )
 class REFTARKOV_API UInventoryComponent : public UActorComponent
@@ -51,4 +54,7 @@ public:
 
 	// Container 직접 접근 — 델리게이트 구독 등에 필요
 	UInventoryContainer* GetContainer() const { return Container; }
+
+	UPROPERTY(BlueprintAssignable,Category = "Inventory")
+	FOnItemAddedToInventory OnItemAdded;
 };

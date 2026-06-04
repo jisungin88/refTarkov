@@ -18,7 +18,14 @@ void UInventoryComponent::BeginPlay()
 
 bool UInventoryComponent::TryAddItem(const UItemDataAsset* ItemDef, int32 Quantity, int32& OutRemainder)
 {
-	return Container ? Container->TryAddItem(ItemDef, Quantity, OutRemainder) : false;
+	if (!Container)
+		return false;
+
+	const bool bChanged = Container->TryAddItem(ItemDef, Quantity, OutRemainder);
+	if (bChanged)
+		OnItemAdded.Broadcast(const_cast<UItemDataAsset*>(ItemDef), Quantity - OutRemainder);
+
+	return bChanged;
 }
 
 bool UInventoryComponent::CanAccept(const UItemDataAsset* ItemDef, int32 Quantity) const

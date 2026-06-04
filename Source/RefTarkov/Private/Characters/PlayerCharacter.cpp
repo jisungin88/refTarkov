@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Characters/PlayerCharacter.h"
@@ -16,6 +16,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MinionsGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "MinionsPlayerState.h"
+#include "Components/RaidStatsComponent.h"
+#include "Inventory/Items/ItemInstance.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -35,7 +38,7 @@ APlayerCharacter::APlayerCharacter()
 	CameraBoom->bEnableCameraLag = true;  // 카메라가 캐릭터를 부드럽게 추적하는 기능 활성화
 	CameraBoom->CameraLagSpeed = 5.0f;    // 수치가 낮을수록 더 묵직하고 부드럽게 따라옴 (3.0 ~ 5.0 추천)
 
-	InteractionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Interation Sphere"));
+	InteractionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Interaction Sphere"));
 	InteractionSphere->SetupAttachment(RootComponent);
 	InteractionSphere->SetSphereRadius(150.f);
 	InteractionSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
@@ -86,6 +89,8 @@ void APlayerCharacter::BeginPlay()
 
 	InteractionSphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnInteractSphereBeginOverlap);
 	InteractionSphere->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnInteractSphereEndOverlap);
+
+	InventoryComp->OnItemAdded.AddDynamic(this, &APlayerCharacter::OnInventoryItemAdded);
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -258,4 +263,15 @@ void APlayerCharacter::UpdateInteractableFocus()
 	}
 
 	CurrentFocusedInteractable = NewNearTarget;
+}
+
+void APlayerCharacter::OnInventoryItemAdded(UItemDataAsset* ItemDef, int32 Quantity)
+{
+	if (AMinionsPlayerState* PS = GetPlayerState<AMinionsPlayerState>())
+	{
+		FItemInstance Instance;
+		Instance.ItemDef = ItemDef;
+		Instance.StackCount = Quantity;
+		PS->RaidStats->RecordLoot(Instance);
+	}
 }
