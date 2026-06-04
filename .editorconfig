@@ -1,0 +1,36 @@
+# UE5 C++ 표준 코딩 스타일
+# https://dev.epicgames.com/documentation/en-us/unreal-engine/epic-cplusplus-coding-standard-for-unreal-engine
+
+root = true
+
+[*.{cpp,h,inl}]
+# UE5 표준: 탭 들여쓰기, 너비 4
+indent_style = tab
+indent_size = 4
+tab_width = 4
+
+# Windows 줄 끝
+end_of_line = crlf
+
+# UTF-8 (BOM 없음 — UE 소스 빌드 시 BOM이 문제를 일으킬 수 있음)
+charset = utf-8
+
+# 줄 끝 공백 자동 제거
+trim_trailing_whitespace = true
+
+# 파일 끝 개행 강제
+insert_final_newline = true
+
+[*.{cs,uproject,uplugin}]
+indent_style = space
+indent_size = 4
+end_of_line = crlf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{json,ini,cfg}]
+indent_style = space
+indent_size = 4
+end_of_line = crlf
+charset = utf-8
