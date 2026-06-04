@@ -22,6 +22,9 @@ public:
 	UBehaviorTree* GetBehaviorTree() const { return BehaviorTreeAsset; }
 
 protected:
+	virtual void HandleDeath(UHealthComponent* HealthComponent, AController* Killer) override;
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintreadOnly, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTreeAsset;
 
