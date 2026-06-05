@@ -7,6 +7,8 @@
 #include "InputActionValue.h"
 #include "PlayerCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponEquippedSignature, AWeaponBase*, NewWeapon);
+
 class UInputAction;
 
 UCLASS()
@@ -69,6 +71,13 @@ protected:
 	TObjectPtr<class AWeaponBase> CurrentWeapon;
 
 	FVector CachedMouseGroundLocation = FVector::ZeroVector;
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "Weapon|Events")
+	FOnWeaponEquippedSignature OnWeaponEquipped;
+
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	AWeaponBase* GetCurrentWeapon() const { return CurrentWeapon; }
 
 protected:
 	void Move(const FInputActionValue& Value);

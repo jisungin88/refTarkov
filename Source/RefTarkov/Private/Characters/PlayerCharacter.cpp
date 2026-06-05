@@ -91,6 +91,7 @@ void APlayerCharacter::BeginPlay()
 	InteractionSphere->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnInteractSphereEndOverlap);
 
 	InventoryComp->OnItemAdded.AddDynamic(this, &APlayerCharacter::OnInventoryItemAdded);
+	OnWeaponEquipped.Broadcast(CurrentWeapon);
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
