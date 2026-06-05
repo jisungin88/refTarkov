@@ -45,4 +45,7 @@ private:
 
 	UFUNCTION()
 	void HandleRaidEnded_TransferStash(APlayerCharacter* Player, ERaidEndReason Reason);
+
+	UFUNCTION()
+	void HandleRaidEnded_CacheStats(APlayerCharacter* Player, ERaidEndReason Reason);
 };

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 #include "MinionsGameModeBase.h"
 #include "Characters/PlayerCharacter.h"
 #include "Inventory/InventoryComponent.h"
@@ -37,6 +37,7 @@ void AMinionsGameModeBase::BeginPlay()
 	}
 
     OnRaidEnded.AddDynamic(this, &AMinionsGameModeBase::HandleRaidEnded_TransferStash);
+	OnRaidEnded.AddDynamic(this, &AMinionsGameModeBase::HandleRaidEnded_CacheStats);
 }
 
 void AMinionsGameModeBase::NotifyRaidExtracted(APlayerCharacter* Player)
@@ -103,4 +104,17 @@ void AMinionsGameModeBase::HandleRaidEnded_TransferStash(APlayerCharacter* Playe
 
 	Stash->TransferFromInventory(Container);
 	UE_LOG(LogTemp, Display, TEXT("[Raid] Stash transfer complete"));
+}
+
+void AMinionsGameModeBase::HandleRaidEnded_CacheStats(APlayerCharacter* Player, ERaidEndReason Reason)
+{
+	if (!Player) return;
+
+	AMinionsPlayerState* PS = Player->GetPlayerState<AMinionsPlayerState>();
+	if (!PS) return;
+
+	UStashSubsystem* Stash = GetGameInstance()->GetSubsystem<UStashSubsystem>();
+	if (!Stash) return;
+
+	Stash->CacheRaidSnapshot(PS->RaidStats->GetSnapshot());
 }
