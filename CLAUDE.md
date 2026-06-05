@@ -33,6 +33,57 @@
 - 코드 스니펫은 ```cpp 블록, 빈칸은 `// TODO: 직접 구현 — 힌트: ...`
 - 답변 끝에 "다음 한 걸음" 한 줄
 
+## UE5 C++ 코딩 컨벤션 (코드 스니펫 작성 시 항상 준수)
+
+### 헤더 클래스 레이아웃 순서
+```
+public:
+    1. 생성자/소멸자
+    2. 외부 API (다른 클래스가 호출하는 함수)
+
+protected:
+    3. 부모 클래스 오버라이드 — //~ Interface / //~ End Interface 구분자 사용
+    4. UPROPERTY 묶음 (역할별: BindWidget / EditDefaultsOnly / VisibleAnywhere 등)
+
+private:
+    5. 내부 콜백 UFUNCTION (Delegate 바인드용)
+    6. 내부 상태 변수
+```
+
+### 세부 규칙
+- **오버라이드 섹션 구분자**: `//~ UUserWidget interface` / `//~ End UUserWidget interface` 패턴 (엔진 소스 전반 표준)
+- **UPROPERTY 접근 레벨 분리**:
+  - `EditDefaultsOnly` (디자이너가 에디터에서 설정) → `protected`
+  - 런타임 생성 인스턴스 (`TObjectPtr<UW_HUD> HUDWidget` 등) → `private`
+- **.cpp 함수 순서**: `.h` 선언 순서와 반드시 일치
+- **파라미터 이름**: 부모 클래스 멤버 변수와 충돌하는 이름 금지 (예: `APlayerController::Player` 섀도잉 → `PlayerChar` 등으로 대체)
+- **Forward declaration**: `.h`에서는 전방 선언, include는 `.cpp`에서 (IWYU 원칙)
+- **출처**: Epic 공식 코딩 표준 및 엔진 소스 `Runtime/Engine/Classes/GameFramework/Character.h` 등 참고
+
+## Git 커밋 방식 (Sourcetree 사용)
+
+형식: `[타입] 시스템/기능 + 결과` — 커밋 하나에 타입 하나, 혼합 금지
+
+| 타입 | 의미 |
+|---|---|
+| Feat | 기능 추가 |
+| Fix | 버그 수정 |
+| Refactor | 구조 개선 (기능 변화 없음) |
+| Anim | 애니메이션 작업 |
+| UI | UI 작업 |
+| FX | Niagara/VFX |
+| Sound | 사운드 |
+| Data | 데이터 수정 |
+| Optimize | 최적화 |
+| Remove | 삭제 |
+| Test | 테스트 코드/실험 |
+| WIP | 작업 중 |
+
+예시: `[Feat] WeaponBase OnAmmoChanged delegate 추가` / `[UI] W_HUD 위젯 추가` / `[Fix] HealthComponent 초기 broadcast 누락 수정`
+나쁜 예: `[Feat] HUD 추가 및 GameMode 수정 및 버그 수정`
+
+커밋 내용 정리 요청 시 — 오늘 변경 파일을 타입별로 분리해서 커밋 목록으로 제공
+
 ## 매 세션 시작 시 액션
 1. `progress_log.md`의 가장 최근 엔트리 읽기 → 어제 어디서 멈췄나, 다음 작업이 뭔가
 2. `design_notes.md`에서 직전 결정 사항 확인
