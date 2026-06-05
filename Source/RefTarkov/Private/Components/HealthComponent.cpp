@@ -19,6 +19,8 @@ void UHealthComponent::BeginPlay()
 	{
 		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::HandleTakeAnyDamage);
 	}
+
+	OnHealthChanged.Broadcast(this, CurrentHealth, CurrentHealth, nullptr);
 }
 
 void UHealthComponent::HandleTakeAnyDamage(
