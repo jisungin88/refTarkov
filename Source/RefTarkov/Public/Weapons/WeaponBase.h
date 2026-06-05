@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAmmoChangedSignature, int32, CurrentAmmo);
+
 UCLASS()
 class REFTARKOV_API AWeaponBase : public AActor
 {
@@ -48,6 +50,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Weapon|Ammo")
 	bool IsReloading() const { return bIsReloading; }
+
+	UPROPERTY(BlueprintAssignable, Category = "Weapon|Events")
+	FOnAmmoChangedSignature OnAmmoChanged;
 
 protected:
 	bool CanFire() const;
