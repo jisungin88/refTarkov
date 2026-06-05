@@ -121,3 +121,21 @@
   - VS 환경 정비: .vs / Binaries / Intermediate / Saved 삭제 + 프로젝트 파일 재생성, `.editorconfig` UE5 표준 추가
 - 막힌 점: `AConroller` 오타로 빌드 에러 — 파일당 1빌드 원칙 준수했지만 오타는 여전히 조심해야 함
 - 다음 작업: Day 16 — `W_RaidResult` UMG 설계 (B형: 추출 성공/실패 + 아이템 목록 + 킬/생존시간/XP 통계)
+
+---
+
+## 2026-06-05 (Day 16 / Chapter 3 Day 2)
+
+- 한 일: UMG 첫 도입 + 메뉴 루프 완성 + Shooter AI C++ 작성
+  - `W_RaidResult` / `W_HUD` / `W_MainMenu` / `AMenuPlayerController` C++ 클래스 + BP 에셋 완성
+  - HUD Push 바인딩: `OnHealthChanged` (HealthComponent) / `OnAmmoChanged` (WeaponBase) / `OnWeaponEquipped` 지연 바인딩 (OnPossess 타이밍 문제 해결)
+  - `HealthComponent::BeginPlay`에서 `OnHealthChanged` broadcast 추가 (초기 HUD 동기화 버그 수정)
+  - `UStashSubsystem` LastRaidSnapshot 캐시 — 레벨 전환 후 메뉴에서 지난 레이드 결과 표시
+  - `GameMode` HandleRaidEnded_CacheStats 구독자 추가
+  - 메뉴 → 레이드 → 결과 화면 → 메뉴 복귀 E2E 루프 검증 완료
+  - `AShooterEnemyCharacter` / `UBTTask_ShootAtPlayer` C++ 작성 완료 (빌드 미진행, 내일 이어서)
+  - CLAUDE.md: UE5 코딩 컨벤션 / Git 커밋 방식 섹션 추가
+- 막힌 점:
+  - `APlayerController::Player` 멤버와 파라미터 이름 충돌 (UHT 섀도잉 금지) → `PlayerChar`로 변경
+  - `OpenLevel` 레벨 이름만으론 탐색 실패 → 전체 경로(`/Game/...`) 필요
+- 다음 작업: Day 17 — `AShooterEnemyCharacter` / `UBTTask_ShootAtPlayer` 빌드 → 에디터 작업 (DA_Enemy_Pistol / BPC_ShooterTarget / EQS_ShooterPosition / BB_Enemy EQSResult 키 추가 / BT_Enemy_Shooter / BP_Enemy_Shooter) → 월드 배치 테스트
