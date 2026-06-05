@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "Types/RaidTypes.h"
 #include "StashSubsystem.generated.h"
 
 UCLASS(Config = Game)
@@ -18,6 +19,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Config, Category = "Stash")
 	int32 InitialMaxSlots = 30;
 
+private:
+	FRaidStatsSnapshot LastRaidSnapshot;
+
+	bool bHasLastSnapshot = false;
+
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
@@ -30,4 +36,8 @@ public:
 	void TransferFromInventory(UInventoryContainer* Source);
 
 	bool ExpandSlots(int32 NewMaxSlots);
+
+	void CacheRaidSnapshot(const FRaidStatsSnapshot& Snapshot);
+	bool HasLastRaidSnapshot() const { return bHasLastSnapshot; }
+	FRaidStatsSnapshot GetLastRaidSnapshot() const { return LastRaidSnapshot; }
 };

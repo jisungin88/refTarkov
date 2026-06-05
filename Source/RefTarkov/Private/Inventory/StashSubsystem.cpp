@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Inventory/StashSubsystem.h"
@@ -72,4 +72,10 @@ void UStashSubsystem::Deinitialize()
 {
     Container = nullptr;   // GC가 알아서 정리하지만 명시
     Super::Deinitialize();
+}
+
+void UStashSubsystem::CacheRaidSnapshot(const FRaidStatsSnapshot& Snapshot)
+{
+	LastRaidSnapshot = Snapshot;
+	bHasLastSnapshot = true;
 }
