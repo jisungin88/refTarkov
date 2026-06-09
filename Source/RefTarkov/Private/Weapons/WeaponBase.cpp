@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/AISense_Hearing.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -41,7 +42,7 @@ bool AWeaponBase::CanFire() const
 	}
 
 	const float FireInterval = 60.f / FMath::Max(1, WeaponData->RPM);
-	UE_LOG(LogTemp, Warning, TEXT("Fire Time: %.1f / %.1f"), GetWorld()->GetTimeSeconds() - LastFireTime, FireInterval)
+	//UE_LOG(LogTemp, Warning, TEXT("Fire Time: %.1f / %.1f"), GetWorld()->GetTimeSeconds() - LastFireTime, FireInterval)
 	if (GetWorld()->GetTimeSeconds() - LastFireTime < FireInterval)
 		return false;
 
@@ -69,6 +70,15 @@ void AWeaponBase::Fire(const FVector& TargetLocation)
 	const FVector Direction = (Aim - Start).GetSafeNormal();
 	const FVector End = Start + Direction * WeaponData->Range;
 	PerformFireTrace(Start, End);
+
+	UAISense_Hearing::ReportNoiseEvent(
+		GetWorld(),
+		GetActorLocation(),   // 소음 발생 위치 (총구)
+		1.0f,                 // Loudness (0~1)
+		GetOwner(),           // 소음 유발 Actor
+		0.f,                  // Max Range (0 = HearingConfig.HearingRange 사용)
+		NAME_None
+	);
 }
 
 void AWeaponBase::PerformFireTrace(const FVector& Start, const FVector& End)
