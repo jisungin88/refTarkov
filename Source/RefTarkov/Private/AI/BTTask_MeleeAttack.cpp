@@ -3,7 +3,7 @@
 
 #include "AI/BTTask_MeleeAttack.h"
 #include "AIController.h"
-#include "Characters/EnemyCharacter.h"
+#include "Characters/MeleeEnemyCharacter.h"
 
 UBTTask_MeleeAttack::UBTTask_MeleeAttack()
 {
@@ -16,7 +16,7 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& Own
 	if (!AICon) 
 		return EBTNodeResult::Failed;
 
-	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(AICon->GetPawn());
+	AMeleeEnemyCharacter* Enemy = Cast<AMeleeEnemyCharacter>(AICon->GetPawn());
 	if (!Enemy) 
 		return EBTNodeResult::Failed;
 
