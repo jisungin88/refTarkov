@@ -139,3 +139,42 @@
   - `APlayerController::Player` 멤버와 파라미터 이름 충돌 (UHT 섀도잉 금지) → `PlayerChar`로 변경
   - `OpenLevel` 레벨 이름만으론 탐색 실패 → 전체 경로(`/Game/...`) 필요
 - 다음 작업: Day 17 — `AShooterEnemyCharacter` / `UBTTask_ShootAtPlayer` 빌드 → 에디터 작업 (DA_Enemy_Pistol / BPC_ShooterTarget / EQS_ShooterPosition / BB_Enemy EQSResult 키 추가 / BT_Enemy_Shooter / BP_Enemy_Shooter) → 월드 배치 테스트
+
+---
+
+## 2026-06-09 (Day 19 / Chapter 3 Day 5)
+
+- 한 일: Shooter AI 완성 + 적 사망 루팅 + AI 디테일 (패트롤 / 청각 / Suspicion 상태)
+  - **Shooter AI 에디터 작업 완료**
+    - `EQSContext_TargetActor` BP 신규 — `Querier → Cast To Pawn → GetController → GetBlackboard → GetValueAsObject` 경로로 BB의 TargetActor를 EQS Context로 공급
+    - `EQS_ShooterPosition` 신규 — Donut(안 400 / 바깥 900) + Distance(Inverse Linear) + Trace(Filter Only, 시야 확보)
+    - `BT_Enemy_Shooter` 신규 — TargetActor Is Set → EQS Query → MoveTo(ShootingSpot) → ShootAtPlayer, else Patrol
+    - `BP_Enemy_Shooter` 신규 — BT_Enemy_Shooter / BP_Weapon_AK74 연결, 레벨 배치 테스트 완료
+    - BB_Enemy에 `ShootingSpot` Vector 키 추가
+    - 디버그: EQSContext Querier = Pawn(Cast To Pawn 경로), NavMesh, Observer Aborts: Lower Priority 차례로 해결
+  - **적 사망 루팅 컨테이너**
+    - `AEnemyCharacter`에 `CorpseClass (TSubclassOf<ALootContainerActor>)` 추가
+    - `HandleDeath`에 `SpawnActor<ALootContainerActor>` — 사망 위치에 루팅 컨테이너 스폰
+    - `BP_EnemyCorpse` 신규 — DA_LootTable_Box1 연결, ContainerSlotCount 8
+    - BP_Enemy_Melee / BP_Enemy_Shooter에 CorpseClass 할당
+  - **AI 패트롤**
+    - BB_Enemy에 `PatrolTarget` Vector 키 추가
+    - `EQS_PatrolPosition` 신규 — Circle(반경 700, 8점) + Pathfinding 필터
+    - BT_Enemy_Bruiser / BT_Enemy_Shooter 패트롤 Sequence 추가 (EQS → MoveTo → Wait 2s)
+    - Selector에 Wait(1s) 폴백 추가 — EQS 실패 시 무한루프 방지
+  - **AI 청각 인지**
+    - `EnemyAIController`에 `UAISenseConfig_Hearing` 추가 (HearingRange 1200, MaxAge 3s)
+    - `WeaponBase::Fire()`에 `UAISense_Hearing::ReportNoiseEvent` 추가 — 발사 시 소음 스티뮬러스 발생
+    - `BP_EnemyAIController` Senses Config에 AISenseConfig_Hearing 수동 등록
+  - **AI Suspicion 상태 (청각 → 조사 → 전투 분기)**
+    - `EnemyAIController`에 `InvestigateLocationKey` 추가
+    - `HandleTargetPerceptionUpdated`에서 `Stimulus.Type`으로 Sight / Hearing 분기
+      - Sight → `TargetActor` 설정 (즉시 전투)
+      - Hearing → `InvestigateLocation` 설정 (조사 이동), 전투 중엔 격하 없음
+    - BB_Enemy에 `InvestigateLocation` Vector 키 추가
+    - BT_Enemy_Bruiser / BT_Enemy_Shooter에 Investigate Sequence 추가 (2순위, aborts lower priority)
+- 막힌 점:
+  - EQS Context: `Cast To Controller` 실패 → Querier가 Pawn임을 뒤늦게 파악, `Cast To Pawn → GetController` 경로로 수정
+  - 청각 showdebug PERCEPTION 파란 원 미표시 — BP_EnemyAIController Senses Config 수동 등록으로 해결
+  - 패트롤 EQS NavMesh 투영 문제 — Projection Data 수정 미완 (내일 처리)
+- 다음 작업: Day 20 — EQS_PatrolPosition Projection Data 수정(Trace Mode: None) → 패트롤 동작 확인 → MaxAge 5s→15s → 데모 영상 촬영 → README 정리
