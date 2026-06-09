@@ -21,7 +21,8 @@ protected:
 
 public:
 	static const FName TargetActorKey;
-
+	static const FName InvestigateLocationKey;
+	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
 	TObjectPtr<class UAIPerceptionComponent> AIPerception;
@@ -31,7 +32,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
 	TObjectPtr<class UBlackboardData> BlackboardAsset;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
+	TObjectPtr<class UAISenseConfig_Hearing> HearingConfig;
+
 public:
 	UFUNCTION(BlueprintPure, Category = "AI")
 	AActor* GetSensedTarget() const;
@@ -46,7 +50,7 @@ public:
 
 #if WITH_EDITOR
 protected:
-	/** ½Ã¾ß ÄÜ µğ¹ö±× ±×¸®±â. WITH_EDITOR¿¡¼­¸¸. */
+	/** ì‹œì•¼ ì½˜ ë””ë²„ê·¸ ê·¸ë¦¬ê¸°. WITH_EDITORì—ì„œë§Œ. */
 	void DrawSightDebug() const;
 #endif
 };

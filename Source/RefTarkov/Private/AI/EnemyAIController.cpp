@@ -1,16 +1,19 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/EnemyAIController.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISense_Sight.h"
+#include "Perception/AISense_Hearing.h"
+#include "Perception/AISenseConfig_Hearing.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "Characters/EnemyCharacter.h"
 #include "GenericTeamAgentInterface.h"
 
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
+const FName AEnemyAIController::InvestigateLocationKey(TEXT("InvestigateLocation"));
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -30,7 +33,16 @@ AEnemyAIController::AEnemyAIController()
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = false;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = false;
 
+	HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("HearingConfig"));
+	HearingConfig->HearingRange = 1200.f;
+	HearingConfig->SetMaxAge(3.f);
+	HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
+	HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
+	HearingConfig->DetectionByAffiliation.bDetectFriendlies = false;
+
 	AIPerception->ConfigureSense(*SightConfig);
+	AIPerception->ConfigureSense(*HearingConfig);
+
 	AIPerception->SetDominantSense(UAISense_Sight::StaticClass());
 }
 
@@ -72,25 +84,33 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 
 void AEnemyAIController::HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	if (!Actor)
+	if (!Actor || !Blackboard)
 		return;
 
-	if(Stimulus.WasSuccessfullySensed())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[%s] Sensed %s"), *GetName(), *Actor->GetName());
+	const bool bSight = Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>();
+	const bool bHearing = Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>();
 
-		if (Blackboard)
+	if (Stimulus.WasSuccessfullySensed())
+	{
+		if (bSight)
 		{
 			Blackboard->SetValueAsObject(TargetActorKey, Actor);
+		}
+		else if (bHearing)
+		{
+			// 이미 타겟을 보고 있으면 조사 상태로 격하하지 않음
+			if (!Blackboard->GetValueAsObject(TargetActorKey))
+			{
+				Blackboard->SetValueAsVector(InvestigateLocationKey, Stimulus.StimulusLocation);
+			}
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[%s] Losd %s"), *GetName(), *Actor->GetName());
-		if (Blackboard)
-		{
+		if (bSight)
 			Blackboard->ClearValue(TargetActorKey);
-		}
+		else if (bHearing)
+			Blackboard->ClearValue(InvestigateLocationKey);
 	}
 }
 
