@@ -7,7 +7,9 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "EnemyCharacter.generated.h"
 
-UCLASS()
+class ALootContainerActor;
+
+UCLASS(Abstract)
 class REFTARKOV_API AEnemyCharacter : public AMinionCharacterBase
 {
 	GENERATED_BODY()
@@ -16,9 +18,6 @@ public:
 	AEnemyCharacter();
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Combat")
-	bool PerformMeleeAttack();
-
 	UBehaviorTree* GetBehaviorTree() const { return BehaviorTreeAsset; }
 
 protected:
@@ -28,14 +27,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintreadOnly, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTreeAsset;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta = (ClampMin = "0.0"))
-	float MeleeRange = 150.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta = (ClampMin = "0.0"))
-	float MeleeDamage = 20.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta = (ClampMin = "0.1"))
-	float MeleeCooldown = 1.0f;
-
-	float LastMeleeTime = -FLT_MAX;
+	UPROPERTY(EditDefaultsOnly, Category = "Loot")
+	TSubclassOf<ALootContainerActor> CorpseClass;
 };
