@@ -13,6 +13,7 @@
 #include "GenericTeamAgentInterface.h"
 
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
+const FName AEnemyAIController::SuspicionTargetKey(TEXT("SuspicionTarget"));
 const FName AEnemyAIController::InvestigateLocationKey(TEXT("InvestigateLocation"));
 
 AEnemyAIController::AEnemyAIController()
@@ -94,7 +95,12 @@ void AEnemyAIController::HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 	{
 		if (bSight)
 		{
-			Blackboard->SetValueAsObject(TargetActorKey, Actor);
+			if (Blackboard->GetValueAsObject(TargetActorKey))
+				return;
+			if (Blackboard->GetValueAsObject(SuspicionTargetKey))
+				return;
+
+			Blackboard->SetValueAsObject(SuspicionTargetKey, Actor);
 		}
 		else if (bHearing)
 		{
@@ -149,7 +155,7 @@ void AEnemyAIController::DrawSightDebug() const
 }
 #endif
 
-AActor* AEnemyAIController::GetSensedTarget() const 
+AActor* AEnemyAIController::GetSensedTarget() const
 {
 	if (Blackboard)
 	{

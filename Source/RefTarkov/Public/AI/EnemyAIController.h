@@ -11,7 +11,7 @@ UCLASS()
 class REFTARKOV_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
-	
+
 public:
 	AEnemyAIController();
 
@@ -21,8 +21,12 @@ protected:
 
 public:
 	static const FName TargetActorKey;
+	static const FName SuspicionTargetKey;
 	static const FName InvestigateLocationKey;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI|Perception", meta = (ClampMin = "0.1", ToopTip = "시야 인지 후 전투 확정까지 걸리는 초"))
+	float SuspicionDuration = 1.5f;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
 	TObjectPtr<class UAIPerceptionComponent> AIPerception;
@@ -43,7 +47,6 @@ public:
 private:
 	UFUNCTION()
 	void HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
-
 
 public:
 	virtual void Tick(float DeltaTime) override;
