@@ -178,3 +178,28 @@
   - 청각 showdebug PERCEPTION 파란 원 미표시 — BP_EnemyAIController Senses Config 수동 등록으로 해결
   - 패트롤 EQS NavMesh 투영 문제 — Projection Data 수정 미완 (내일 처리)
 - 다음 작업: Day 20 — EQS_PatrolPosition Projection Data 수정(Trace Mode: None) → 패트롤 동작 확인 → MaxAge 5s→15s → 데모 영상 촬영 → README 정리
+
+---
+
+## 2026-06-10 (Day 20 / Chapter 3 Day 6)
+
+- 한 일: MeleeEnemy AI 전면 개선
+  - **BT 구조 수정**: Patrol Sequence를 InvestigateLocation Sequence 밖으로 분리 → Selector 직속 4단계 브랜치 (Combat / Suspicion / Investigate / Patrol) 확립
+  - **Suspicion 시스템 (Build 3~4 완료)**:
+    - `BB_Enemy`에 `SuspicionTarget` (Object, Base Class: Actor) 키 추가
+    - `EnemyAIController`: `SuspicionTargetKey` / `EditDefaultsOnly SuspicionDuration` 추가, Sight 인지 시 즉시 전투 대신 SuspicionTarget 설정으로 전환
+    - `BTTask_EvaluateSuspicion` 신규 — LatentTask, SetFocus로 바라보기 + SuspicionDuration 경과 후 TargetActor 격상, AbortTask 포커스 클리어
+    - BT_Enemy_Bruiser Suspicion Sequence 삽입 (aborts both)
+  - **피격 인지 + 사망 처리 (Build 1~2 완료)**:
+    - `EnemyCharacter::HandleDeath` — BT StopLogic / StopMovement / ClearFocus 추가, SetLifeSpan(120.f)으로 루팅 시간 확보
+    - `EnemyCharacter::TakeDamage` 오버라이드 — 피격 시 DamageCauser 위치를 InvestigateLocation으로 등록
+  - **Sight Lost → Last Known Position**: `HandleTargetPerceptionUpdated` Sight lost 분기에 `StimulusLocation → InvestigateLocationKey` 저장 — 플레이어가 시야에서 사라져도 바로 포기하지 않음
+  - **BTTask_MeleeAttack 개선**: Latent Task로 교체, `EditAnywhere RotationSpeed`(°/s) 추가, 공격 전 `RInterpConstantTo`로 타겟 방향 부드럽게 회전 후 Sweep
+  - **랜덤 패트롤 (BTTask_GetRandomPatrol BP 신규)**: EQS Random test 미지원(UE 5.7) → `GetRandomReachablePointInRadius` 기반 BP BTTask로 대체, BT Run EQS Query 노드 교체
+  - **BTTask_ClearInvestigateLocation BP 신규**: Investigate Sequence 완료 후 BB 클리어, 무한 조사 루프 방지
+  - **CLAUDE.md 업데이트**: git CLI 미설치 / Sourcetree 전용 환경 명시
+- 막힌 점:
+  - EQS `Random` 테스트 UE 5.7 기본 목록 미제공 → BP BTTask로 우회
+  - `BB_Enemy` SuspicionTarget 키 `Parent(Base Class)` None 상태 → Actor로 설정 후 BTTask 드롭다운 정상 인식
+  - `BTTask_GetRandomPatrol` exec 체인 미연결 시 PatrolTarget = (0,0,0) → Print String 디버그로 확인 필요
+- 다음 작업: BTTask_GetRandomPatrol exec 체인 확인 → Build 5 (EnemyCharacter IInteractable 시체 루팅) 구현
