@@ -11,10 +11,13 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "Characters/EnemyCharacter.h"
 #include "GenericTeamAgentInterface.h"
+#include "AI/AIAlertSubsystem.h"
 
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
 const FName AEnemyAIController::SuspicionTargetKey(TEXT("SuspicionTarget"));
 const FName AEnemyAIController::InvestigateLocationKey(TEXT("InvestigateLocation"));
+const FName AEnemyAIController::HomeLocationKey(TEXT("HomeLocation"));
+const FName AEnemyAIController::ShouldReturnHomeKey(TEXT("ShouldReturnHome"));
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -28,7 +31,7 @@ AEnemyAIController::AEnemyAIController()
 	SightConfig->LoseSightRadius = 2000.f;                   // 이 거리 밖으로 가면 시야에서 잃음
 	SightConfig->PeripheralVisionAngleDegrees = 70.f;        // 좌우 각도(총 시야각 180도)
 	SightConfig->SetMaxAge(5.f);                             // 5초 동안은 잃어도 stim 유지
-	SightConfig->AutoSuccessRangeFromLastSeenLocation = 600.f;
+	SightConfig->AutoSuccessRangeFromLastSeenLocation = 0.f;
 
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = false;
@@ -56,6 +59,20 @@ void AEnemyAIController::BeginPlay()
 		AIPerception->OnTargetPerceptionUpdated.AddDynamic(this,
 			&AEnemyAIController::HandleTargetPerceptionUpdated);
 	}
+
+	if (UAIAlertSubsystem* AlertSys = GetWorld()->GetSubsystem<UAIAlertSubsystem>())
+	{
+		AlertSys->RegisterEnemy(this);
+	}
+}
+
+void AEnemyAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (UAIAlertSubsystem* AlertSys = GetWorld()->GetSubsystem<UAIAlertSubsystem>())
+	{
+		AlertSys->UnregisterEnemy(this);
+	}
+	Super::EndPlay(EndPlayReason);
 }
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
@@ -71,6 +88,10 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	{
 		UBlackboardComponent* BBComp = nullptr;
 		UseBlackboard(BlackboardAsset, BBComp);
+		if (BBComp)
+		{
+			BBComp->SetValueAsVector(HomeLocationKey, InPawn->GetActorLocation());
+		}
 	}
 
 	// BT 시작
@@ -101,6 +122,12 @@ void AEnemyAIController::HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 				return;
 
 			Blackboard->SetValueAsObject(SuspicionTargetKey, Actor);
+
+			if (UAIAlertSubsystem* AlertSys = GetWorld()->GetSubsystem<UAIAlertSubsystem>())
+			{
+				AlertSys->BroadcastAlert(Actor->GetActorLocation(), AlertBroadcastRadius,
+										GetGenericTeamId().GetId(), this);
+			}
 		}
 		else if (bHearing)
 		{
@@ -114,7 +141,11 @@ void AEnemyAIController::HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 	else
 	{
 		if (bSight)
+		{
+			Blackboard->SetValueAsVector(InvestigateLocationKey, Stimulus.StimulusLocation);
 			Blackboard->ClearValue(TargetActorKey);
+			Blackboard->ClearValue(SuspicionTargetKey);
+		}
 		else if (bHearing)
 			Blackboard->ClearValue(InvestigateLocationKey);
 	}
@@ -126,6 +157,20 @@ void AEnemyAIController::Tick(float DeltaTime)
 
 #if WITH_EDITOR
 	DrawSightDebug();
+	if (Blackboard && GetPawn())
+	{
+		const FVector Home = Blackboard->GetValueAsVector(HomeLocationKey);
+		const float DistSq = FVector::DistSquared(GetPawn()->GetActorLocation(), Home);
+		const bool bTooFar = DistSq > FMath::Square(LeashRadius);
+
+		const bool bInThreatState = Blackboard->GetValueAsObject(TargetActorKey) != nullptr
+								|| Blackboard->GetValueAsObject(SuspicionTargetKey) != nullptr;
+
+		if (bTooFar && bInThreatState)
+			Blackboard->SetValueAsBool(ShouldReturnHomeKey, true);
+		else
+			Blackboard->ClearValue(ShouldReturnHomeKey);
+	}
 #endif
 }
 
