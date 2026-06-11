@@ -18,14 +18,23 @@ public:
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
 	static const FName TargetActorKey;
 	static const FName SuspicionTargetKey;
 	static const FName InvestigateLocationKey;
+	static const FName HomeLocationKey;
+	static const FName ShouldReturnHomeKey;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI|Perception", meta = (ClampMin = "0.1", ToopTip = "시야 인지 후 전투 확정까지 걸리는 초"))
 	float SuspicionDuration = 1.5f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI|Leash", meta = (ClampMin = "100.0"))
+	float LeashRadius = 1500.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI|Alert", meta = (ClampMin = "100.0"))
+	float AlertBroadcastRadius = 1500.f;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
