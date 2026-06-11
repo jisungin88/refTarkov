@@ -203,3 +203,24 @@
   - `BB_Enemy` SuspicionTarget 키 `Parent(Base Class)` None 상태 → Actor로 설정 후 BTTask 드롭다운 정상 인식
   - `BTTask_GetRandomPatrol` exec 체인 미연결 시 PatrolTarget = (0,0,0) → Print String 디버그로 확인 필요
 - 다음 작업: BTTask_GetRandomPatrol exec 체인 확인 → Build 5 (EnemyCharacter IInteractable 시체 루팅) 구현
+
+---
+
+## 2026-06-11 (Day 21 / Chapter 3 Day 7)
+
+- 한 일: AI 디테일 6종 완성
+  - **버그 수정 3종 (Sight 관련)**:
+    - `SightConfig->AutoSuccessRangeFromLastSeenLocation` 600→0 — 벽 뒤 플레이어 자동 인지 차단
+    - `HandleTargetPerceptionUpdated` Sight lost 분기: `StimulusLocation → InvestigateLocationKey` 저장 + `SuspicionTargetKey` 클리어 추가 (클리어 누락 시 EvaluateSuspicion이 TargetActor 재설정하는 버그)
+    - BT Sequence 데코레이터 `Observer Aborts: Both` 적용 — TargetActor 클리어 즉시 MoveTo 중단 (캐시된 액터 레퍼런스 문제)
+  - **버그 수정: BTTask_ClearInvestigateLocation** — BB Key Name `None`→`"InvestigateLocation"` 수정 (무한 조사 루프 원인)
+  - **버그 수정: BTTask_GetRandomPatrol** — 패트롤 Origin 현재위치→`HomeLocation` BB키로 변경 (적이 조사 지점 주변 패트롤하는 버그)
+  - **MoveTo AcceptanceRadius 조정**: Combat 120cm / Investigate 80cm / Patrol 50cm (BT 에디터)
+  - **Leash System**: `BB_Enemy`에 `HomeLocation`·`ShouldReturnHome` 키 추가, `EnemyAIController`에 `LeashRadius`(기본 1500cm) + `OnPossess` HomeLocation 저장 + `Tick` 거리 체크. BT Investigate↔Patrol 사이에 Leash Sequence 삽입
+  - **Investigate 탐색 루프**: `BTTask_GetSearchPoint` BP 신규 (InvestigateLocation 기준 반경 500cm 랜덤 포인트), Investigate Sequence에 Loop Decorator(Num Loops: 2) 서브시퀀스 추가 — 조사 후 주변 탐색 2회 후 귀환
+  - **BTService_Strafe 신규 C++**: Shooter 사격 중 좌우 이동. `IsFollowingAPath()`로 MoveTo 중 비발동. `DirectionChangePeriod`(기본 1.5s)마다 방향 전환. `FServiceMemory` 인스턴스 메모리 패턴
+  - **UAIAlertSubsystem 신규**: `UWorldSubsystem` 기반 팀 경보 전파. `RegisterEnemy`/`UnregisterEnemy`(BeginPlay/EndPlay), `BroadcastAlert(위치, 반경, 팀ID, 발신자)`. `HandleTargetPerceptionUpdated` SuspicionTarget 설정 시 자동 브로드캐스트. 전투·의심 중인 아군은 격하 없음
+- 막힌 점:
+  - `BP_EnemyAIController` Senses Config BP 오버라이드가 C++ 생성자 값 덮어씀 → BP에서 직접 AutoSuccessRange 수정 필요
+  - BT 디버그 스크린샷으로 노드 위치 오판 2회 — 전체 트리 스크린샷 먼저 요청해야 함
+- 다음 작업: Strafing / Leash / Alert 통합 테스트 → Chapter 3 마무리 작업 (UI 정리 / 데모 영상)
