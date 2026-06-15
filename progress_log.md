@@ -224,3 +224,35 @@
   - `BP_EnemyAIController` Senses Config BP 오버라이드가 C++ 생성자 값 덮어씀 → BP에서 직접 AutoSuccessRange 수정 필요
   - BT 디버그 스크린샷으로 노드 위치 오판 2회 — 전체 트리 스크린샷 먼저 요청해야 함
 - 다음 작업: Strafing / Leash / Alert 통합 테스트 → Chapter 3 마무리 작업 (UI 정리 / 데모 영상)
+
+---
+
+## 2026-06-15 (Day 25 / AI 확장 Day 1)
+
+- 한 일: Combat Director 시스템 전체 구축 (GTA5 스타일 분대 AI 참고)
+  - **UCombatDirectorSubsystem 신규** (UWorldSubsystem)
+    - `ECombatRole` enum (Free / Suppress / Flank)
+    - `RegisterCombatant` / `UnregisterCombatant` — 전투 진입/이탈 시 이벤트 기반 즉시 역할 재배정
+    - `AssignRoles()` — 1명: Free, 2명+: 마지막 등록 1명 Flank / 나머지 Suppress
+  - **EnemyAIController 확장**
+    - `EnterCombat(Target)` — TargetActor BB 설정 + Director 등록 (BTTask_EvaluateSuspicion에서 호출)
+    - `ExitCombat()` — BB 클리어 + Director 해제 (Sight lost / HandleDeath에서 호출)
+    - `UpdateLOD()` — 거리 기반 Tick Rate 3단계 (근 <1500cm: 풀틱 / 중: 0.2s / 원 >3500cm: 0.5s)
+    - `CombatRoleKey` static const 추가
+  - **BTTask_EvaluateSuspicion** — TargetActor 직접 BB 설정 → `EnterCombat()` 호출로 교체
+  - **EnemyCharacter HandleDeath** — `ExitCombat()` 추가 (사망 시 Director 즉시 해제 + 역할 재배정)
+  - **BT_Enemy_Shooter** — Combat 브랜치 재구성: Selector 3-way (Suppress / Flank / Default)
+    - Suppress: ShootAtPlayer 제자리 사격 (Strafe 서비스 유지)
+    - Flank: EQS_FlankPosition → MoveTo → ShootAtPlayer
+    - Default: 기존 EQS_ShooterPosition 동작
+  - **BT_Enemy_Bruiser** — Flank 브랜치 추가 (EQS_FlankPosition → MoveTo → MeleeAttack)
+  - **EQS_FlankPosition 신규** — Circle(TargetActor 기준 반경 700, 8점) + Pathfinding Filter + Dot(2D) Score (Scoring Factor -1.0, 플레이어 후방/측면 선호)
+  - **BB_Enemy** — `CombatRole`(Int) / `FlankPosition`(Vector) 키 추가
+  - **EnvQueryTest_CoverScore C++ 작성** — 체력 연동 거리 가중치 (HealthMultiplier 1.0~2.0), 에디터 연결 미완
+- 막힌 점:
+  - `BTTask_EvaluateSuspicion` — `EnemyAIC` 변수 섀도잉 (const 중복 선언) → 외부 선언에서 const 제거 후 재사용
+  - `EnemyAIController.cpp` — `#include "IO/IoStoreOnDemand.h"` 불필요 include 混入 → 제거
+  - BT_Enemy_Shooter Flank 브랜치 — EQS Result Key `ShootingSpot` → `FlankPosition` 불일치 수정
+  - BT_Enemy_Bruiser Flank 브랜치 — EQS Result Key `SelfActor` → `FlankPosition` 수정 + MeleeAttack 누락 추가
+  - EQS Dot Test Mode — `Dot (3D)` → `Dot (2D)` (탑다운, Z축 제거)
+- 다음 작업: EnvQueryTest_CoverScore 에디터 연결 (EQS_ShooterPosition에 Cover Score 테스트 추가, TargetContext: EQSContext_TargetActor)
