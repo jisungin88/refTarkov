@@ -12,12 +12,14 @@
 #include "Characters/EnemyCharacter.h"
 #include "GenericTeamAgentInterface.h"
 #include "AI/AIAlertSubsystem.h"
+#include "AI/CombatDirectorSubsystem.h"
 
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
 const FName AEnemyAIController::SuspicionTargetKey(TEXT("SuspicionTarget"));
 const FName AEnemyAIController::InvestigateLocationKey(TEXT("InvestigateLocation"));
 const FName AEnemyAIController::HomeLocationKey(TEXT("HomeLocation"));
 const FName AEnemyAIController::ShouldReturnHomeKey(TEXT("ShouldReturnHome"));
+const FName AEnemyAIController::CombatRoleKey(TEXT("CombatRole"));
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -104,6 +106,7 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	}
 }
 
+
 void AEnemyAIController::HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (!Actor || !Blackboard)
@@ -143,8 +146,7 @@ void AEnemyAIController::HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 		if (bSight)
 		{
 			Blackboard->SetValueAsVector(InvestigateLocationKey, Stimulus.StimulusLocation);
-			Blackboard->ClearValue(TargetActorKey);
-			Blackboard->ClearValue(SuspicionTargetKey);
+			ExitCombat();
 		}
 		else if (bHearing)
 			Blackboard->ClearValue(InvestigateLocationKey);
@@ -154,6 +156,7 @@ void AEnemyAIController::HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 void AEnemyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateLOD();
 
 #if WITH_EDITOR
 	DrawSightDebug();
@@ -207,4 +210,47 @@ AActor* AEnemyAIController::GetSensedTarget() const
 		return Cast<AActor>(Blackboard->GetValueAsObject(TargetActorKey));
 	}
 	return nullptr;
+}
+
+void AEnemyAIController::EnterCombat(AActor* Target)
+{
+	if (!Blackboard || !Target)
+		return;
+	Blackboard->SetValueAsObject(TargetActorKey, Target);
+
+	if (UCombatDirectorSubsystem* Director = GetWorld()->GetSubsystem<UCombatDirectorSubsystem>())
+		Director->RegisterCombatant(this);
+}
+
+void AEnemyAIController::ExitCombat()
+{
+	if (Blackboard)
+	{
+		Blackboard->ClearValue(TargetActorKey);
+		Blackboard->ClearValue(SuspicionTargetKey);
+	}
+
+	if (UCombatDirectorSubsystem* Director = GetWorld()->GetSubsystem<UCombatDirectorSubsystem>())
+	{
+		Director->UnregisterCombatant(this);
+	}
+}
+
+void AEnemyAIController::UpdateLOD()
+{
+	if (!GetPawn()) return;
+
+	const APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	if (!PC || !PC->GetPawn()) return;
+
+	const float DistSq = FVector::DistSquared(
+		GetPawn()->GetActorLocation(),
+		PC->GetPawn()->GetActorLocation());
+
+	if (DistSq < FMath::Square(LODNearRange))
+		SetActorTickInterval(0.f);      // 근거리: 매 프레임
+	else if (DistSq < FMath::Square(LODFarRange))
+		SetActorTickInterval(0.2f);     // 중거리: 5fps
+	else
+		SetActorTickInterval(0.5f);     // 원거리: 2fps
 }

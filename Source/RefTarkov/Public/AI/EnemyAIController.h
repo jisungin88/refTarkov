@@ -26,6 +26,7 @@ public:
 	static const FName InvestigateLocationKey;
 	static const FName HomeLocationKey;
 	static const FName ShouldReturnHomeKey;
+	static const FName CombatRoleKey;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI|Perception", meta = (ClampMin = "0.1", ToopTip = "시야 인지 후 전투 확정까지 걸리는 초"))
 	float SuspicionDuration = 1.5f;
@@ -49,9 +50,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
 	TObjectPtr<class UAISenseConfig_Hearing> HearingConfig;
 
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "AI|LOD", meta = (ClampMin = "100.0"))
+	float LODNearRange = 1500.f;    // 이 거리 이내: 풀 틱
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI|LOD", meta = (ClampMin = "100.0"))
+	float LODFarRange = 3500.f;     // 이 거리 이상: 저빈도 틱
+
 public:
 	UFUNCTION(BlueprintPure, Category = "AI")
 	AActor* GetSensedTarget() const;
+
+	void EnterCombat(AActor* Target);
+	void ExitCombat();
 
 private:
 	UFUNCTION()
@@ -59,6 +70,7 @@ private:
 
 public:
 	virtual void Tick(float DeltaTime) override;
+	void UpdateLOD();
 
 #if WITH_EDITOR
 protected:
