@@ -34,6 +34,9 @@ void AEnemyCharacter::HandleDeath(UHealthComponent* HealthComponent, AController
 		{
 			AIC->BrainComponent->StopLogic(TEXT("Dead"));
 		}
+		if (AEnemyAIController* EnemyAIC = Cast<AEnemyAIController>(GetController()))
+			EnemyAIC->ExitCombat();
+
 		AIC->ClearFocus(EAIFocusPriority::Gameplay);
 	}
 

@@ -52,7 +52,7 @@ void UBTTask_EvaluateSuspicion::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 		return;
 	}
 
-	const AEnemyAIController* EnemyAIC = Cast<AEnemyAIController>(AIC);
+	AEnemyAIController* EnemyAIC = Cast<AEnemyAIController>(AIC);
 	const float Duration = EnemyAIC ? EnemyAIC->SuspicionDuration : 1.5f;
 
 	if (Memory->ElapsedTime > Duration)
@@ -61,10 +61,10 @@ void UBTTask_EvaluateSuspicion::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 
 		if (AActor* SuspicionActor = Cast<AActor>(BB->GetValueAsObject(SuspicionTargetKey.SelectedKeyName)))
 		{
-			BB->SetValueAsObject(AEnemyAIController::TargetActorKey, SuspicionActor);
+			if (EnemyAIC)
+				EnemyAIC->EnterCombat(SuspicionActor);
 		}
 		BB->ClearValue(SuspicionTargetKey.SelectedKeyName);
-
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }
