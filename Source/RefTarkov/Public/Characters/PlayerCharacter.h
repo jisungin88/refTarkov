@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Characters/MinionCharacterBase.h"
+#include "Characters/LootlingCharacterBase.h"
 #include "InputActionValue.h"
 #include "PlayerCharacter.generated.h"
 
@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponEquippedSignature, AWeaponB
 class UInputAction;
 
 UCLASS()
-class REFTARKOV_API APlayerCharacter : public AMinionCharacterBase
+class REFTARKOV_API APlayerCharacter : public ALootlingCharacterBase
 {
 	GENERATED_BODY()
 

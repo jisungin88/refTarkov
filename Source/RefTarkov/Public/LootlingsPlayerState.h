@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
-#include "MinionsPlayerState.generated.h"
+#include "LootlingsPlayerState.generated.h"
 
 UCLASS()
-class REFTARKOV_API AMinionsPlayerState : public APlayerState
+class REFTARKOV_API ALootlingsPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 	
 public:
-	AMinionsPlayerState();
+	ALootlingsPlayerState();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid")

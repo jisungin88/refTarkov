@@ -4,7 +4,7 @@
 #include "Extraction/ExtractionZoneActor.h"
 #include "Components/BoxComponent.h"            
 #include "Characters/PlayerCharacter.h"           
-#include "MinionsGameModeBase.h"
+#include "LootlingsGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 
 AExtractionZoneActor::AExtractionZoneActor()
@@ -63,7 +63,7 @@ void AExtractionZoneActor::CompleteExtraction()
 	if (!ExtractingPlayer.IsValid())
 		return;
 
-	if (AMinionsGameModeBase* GM = Cast<AMinionsGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	if (ALootlingsGameModeBase* GM = Cast<ALootlingsGameModeBase>(UGameplayStatics::GetGameMode(this)))
 	{
 		GM->NotifyRaidExtracted(ExtractingPlayer.Get());
 	}

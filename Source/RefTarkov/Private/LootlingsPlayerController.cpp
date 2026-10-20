@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MinionsPlayerController.h"
-#include "Managers/MinionsCheatManager.h"
+#include "LootlingsPlayerController.h"
+#include "Managers/LootlingsCheatManager.h"
 #include "UObject/ConstructorHelpers.h"
-#include "MinionsGameModeBase.h"
-#include "MinionsPlayerState.h"
+#include "LootlingsGameModeBase.h"
+#include "LootlingsPlayerState.h"
 #include "Components/RaidStatsComponent.h"
 #include "UI/W_HUD.h"
 #include "UI/W_RaidResult.h"
@@ -13,7 +13,7 @@
 #include "Components/HealthComponent.h"
 #include "Weapons/WeaponBase.h"
 
-AMinionsPlayerController::AMinionsPlayerController()
+ALootlingsPlayerController::ALootlingsPlayerController()
 {
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
@@ -26,11 +26,11 @@ AMinionsPlayerController::AMinionsPlayerController()
 	}
 	else
 	{
-		CheatClass = UMinionsCheatManager::StaticClass();
+		CheatClass = ULootlingsCheatManager::StaticClass();
 	}
 }
 
-void AMinionsPlayerController::BeginPlay()
+void ALootlingsPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -49,15 +49,15 @@ void AMinionsPlayerController::BeginPlay()
 		}
 	}
 
-	AMinionsGameModeBase* GM =
-		GetWorld() ? GetWorld()->GetAuthGameMode<AMinionsGameModeBase>() : nullptr;
+	ALootlingsGameModeBase* GM =
+		GetWorld() ? GetWorld()->GetAuthGameMode<ALootlingsGameModeBase>() : nullptr;
 	if (GM)
 	{
-		GM->OnRaidEnded.AddDynamic(this, &AMinionsPlayerController::HandleRaidEnded);
+		GM->OnRaidEnded.AddDynamic(this, &ALootlingsPlayerController::HandleRaidEnded);
 	}
 }
 
-void AMinionsPlayerController::OnPossess(APawn* InPawn)
+void ALootlingsPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
@@ -66,19 +66,19 @@ void AMinionsPlayerController::OnPossess(APawn* InPawn)
 
 	if (UHealthComponent* HealthComp = PlayerChar->GetHealthComponent())
 	{
-		HealthComp->OnHealthChanged.AddDynamic(this, &AMinionsPlayerController::HandleHealthChanged);
+		HealthComp->OnHealthChanged.AddDynamic(this, &ALootlingsPlayerController::HandleHealthChanged);
 		if (HUDWidget)
 		{
 			HUDWidget->UpdateHealth(HealthComp->GetCurrentHealth(), HealthComp->GetMaxHealth());
 		}
 	}
 
-	PlayerChar->OnWeaponEquipped.AddDynamic(this, &AMinionsPlayerController::HandleWeaponEquipped);
+	PlayerChar->OnWeaponEquipped.AddDynamic(this, &ALootlingsPlayerController::HandleWeaponEquipped);
 }
 
-void AMinionsPlayerController::HandleRaidEnded(APlayerCharacter* PlayerChar, ERaidEndReason EndReason)
+void ALootlingsPlayerController::HandleRaidEnded(APlayerCharacter* PlayerChar, ERaidEndReason EndReason)
 {
-	AMinionsPlayerState* PS = GetPlayerState<AMinionsPlayerState>();
+	ALootlingsPlayerState* PS = GetPlayerState<ALootlingsPlayerState>();
 	if (PS && PS->RaidStats)
 	{
 		if (RaidResultWidgetClass)
@@ -99,7 +99,7 @@ void AMinionsPlayerController::HandleRaidEnded(APlayerCharacter* PlayerChar, ERa
 	bShowMouseCursor = true;
 }
 
-void AMinionsPlayerController::HandleHealthChanged(UHealthComponent* HealthComp,
+void ALootlingsPlayerController::HandleHealthChanged(UHealthComponent* HealthComp,
 	float OldHealth, float NewHealth, AController* InstigatedBy)
 {
 	if (HUDWidget && HealthComp)
@@ -108,11 +108,11 @@ void AMinionsPlayerController::HandleHealthChanged(UHealthComponent* HealthComp,
 	}
 }
 
-void AMinionsPlayerController::HandleWeaponEquipped(AWeaponBase* NewWeapon)
+void ALootlingsPlayerController::HandleWeaponEquipped(AWeaponBase* NewWeapon)
 {
 	if (!NewWeapon || !HUDWidget) return;
 
-	NewWeapon->OnAmmoChanged.AddDynamic(this, &AMinionsPlayerController::HandleAmmoChanged);
+	NewWeapon->OnAmmoChanged.AddDynamic(this, &ALootlingsPlayerController::HandleAmmoChanged);
 
 	if (HUDWidget)
 	{
@@ -120,7 +120,7 @@ void AMinionsPlayerController::HandleWeaponEquipped(AWeaponBase* NewWeapon)
 	}
 }
 
-void AMinionsPlayerController::HandleAmmoChanged(int32 CurrentAmmo)
+void ALootlingsPlayerController::HandleAmmoChanged(int32 CurrentAmmo)
 {
 	if (HUDWidget)
 	{

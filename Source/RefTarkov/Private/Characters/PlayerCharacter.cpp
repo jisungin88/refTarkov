@@ -14,10 +14,11 @@
 #include "Weapons/WeaponBase.h"
 #include "Loot/Interactable.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "MinionsGameModeBase.h"
+#include "LootlingsGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "MinionsPlayerState.h"
+#include "LootlingsPlayerState.h"
 #include "Components/RaidStatsComponent.h"
+#include "Inventory/InventoryComponent.h"
 #include "Inventory/Items/ItemInstance.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -155,7 +156,7 @@ void APlayerCharacter::HandleDeath(class UHealthComponent* HealthComponent, ACon
 		CurrentWeapon->SetActorEnableCollision(false);
 	}
 
-	if (AMinionsGameModeBase* GM = Cast<AMinionsGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	if (ALootlingsGameModeBase* GM = Cast<ALootlingsGameModeBase>(UGameplayStatics::GetGameMode(this)))
 	{
 		GM->NotifyRaidFailed(this);
 	}
@@ -268,7 +269,7 @@ void APlayerCharacter::UpdateInteractableFocus()
 
 void APlayerCharacter::OnInventoryItemAdded(UItemDataAsset* ItemDef, int32 Quantity)
 {
-	if (AMinionsPlayerState* PS = GetPlayerState<AMinionsPlayerState>())
+	if (ALootlingsPlayerState* PS = GetPlayerState<ALootlingsPlayerState>())
 	{
 		FItemInstance Instance;
 		Instance.ItemDef = ItemDef;

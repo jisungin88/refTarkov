@@ -1,13 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Managers/MinionsCheatManager.h"
+#include "Managers/LootlingsCheatManager.h"
 #include "Inventory/DataAssets/ItemDataAsset.h"
 #include "Inventory/InventoryComponent.h"
 #include "Inventory/Items/ItemInstance.h"              
 #include "GameFramework/PlayerController.h"  
 #include "Inventory/StashSubsystem.h"
 
-void UMinionsCheatManager::DebugAddItem(FName Name, int32 Quantity)
+void ULootlingsCheatManager::DebugAddItem(FName Name, int32 Quantity)
 {
     UInventoryComponent* Inven = GetTargetInventory();
     if (!Inven)
@@ -41,7 +41,7 @@ void UMinionsCheatManager::DebugAddItem(FName Name, int32 Quantity)
         Remainder);
 }
 
-void UMinionsCheatManager::DebugRemoveItemAt(int32 SlotIndex, int32 Quantity)
+void ULootlingsCheatManager::DebugRemoveItemAt(int32 SlotIndex, int32 Quantity)
 {
     UInventoryComponent* Inven = GetTargetInventory();
     if (!Inven)
@@ -57,7 +57,7 @@ void UMinionsCheatManager::DebugRemoveItemAt(int32 SlotIndex, int32 Quantity)
         bResult ? TEXT("OK") : TEXT("FAIL"));
 }
 
-void UMinionsCheatManager::DebugDumpInventory()
+void ULootlingsCheatManager::DebugDumpInventory()
 {
     UInventoryComponent* Inven = GetTargetInventory();
     if (!Inven)
@@ -90,7 +90,7 @@ void UMinionsCheatManager::DebugDumpInventory()
     }
 }
 
-void UMinionsCheatManager::DebugDumpStash()
+void ULootlingsCheatManager::DebugDumpStash()
 {
     UStashSubsystem* Stash = GetWorld()->GetGameInstance()->GetSubsystem<UStashSubsystem>();
     if (!Stash) return;
@@ -117,7 +117,7 @@ void UMinionsCheatManager::DebugDumpStash()
     }
 }
 
-class UInventoryComponent* UMinionsCheatManager::GetTargetInventory() const
+class UInventoryComponent* ULootlingsCheatManager::GetTargetInventory() const
 {
     APlayerController* PC = GetOuterAPlayerController();
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;

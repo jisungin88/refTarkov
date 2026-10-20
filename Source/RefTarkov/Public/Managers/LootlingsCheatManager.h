@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CheatManager.h"
-#include "MinionsCheatManager.generated.h"
+#include "LootlingsCheatManager.generated.h"
 
 UCLASS()
-class REFTARKOV_API UMinionsCheatManager : public UCheatManager
+class REFTARKOV_API ULootlingsCheatManager : public UCheatManager
 {
 	GENERATED_BODY()
 

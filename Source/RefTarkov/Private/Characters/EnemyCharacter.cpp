@@ -9,7 +9,7 @@
 #include "Inventory/InventoryComponent.h"
 #include "Inventory/Items/ItemInstance.h"
 #include "Loot/LootTableDataAsset.h"
-#include "MinionsPlayerState.h"
+#include "LootlingsPlayerState.h"
 #include "Components/RaidStatsComponent.h"
 
 AEnemyCharacter::AEnemyCharacter()
@@ -45,7 +45,7 @@ void AEnemyCharacter::HandleDeath(UHealthComponent* HealthComponent, AController
 
 	if (APlayerController* PC = Cast<APlayerController>(Killer))
 	{
-		if (AMinionsPlayerState* PS = PC->GetPlayerState<AMinionsPlayerState>())
+		if (ALootlingsPlayerState* PS = PC->GetPlayerState<ALootlingsPlayerState>())
 		{
 			PS->RaidStats->RecordKill();
 		}

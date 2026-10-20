@@ -5,19 +5,19 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Types/RaidTypes.h"
-#include "MinionsPlayerController.generated.h"
+#include "LootlingsPlayerController.generated.h"
 
 class UHealthComponent;
 class AWeaponBase;
 class APlayerCharacter;
 
 UCLASS()
-class REFTARKOV_API AMinionsPlayerController : public APlayerController
+class REFTARKOV_API ALootlingsPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
 public:
-	AMinionsPlayerController();
+	ALootlingsPlayerController();
 
 protected:
 	virtual void BeginPlay() override;

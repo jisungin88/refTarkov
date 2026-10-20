@@ -1,19 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-#include "MinionsGameModeBase.h"
+#include "LootlingsGameModeBase.h"
 #include "Characters/PlayerCharacter.h"
 #include "Inventory/InventoryComponent.h"
 #include "Inventory/InventoryContainer.h"
 #include "Inventory/StashSubsystem.h"
 #include "GameFramework/PlayerController.h"
 #include "GenericTeamAgentInterface.h"
-#include "MinionsPlayerState.h"
+#include "LootlingsPlayerState.h"
+#include "Components/RaidStatsComponent.h"
 
-AMinionsGameModeBase::AMinionsGameModeBase()
+ALootlingsGameModeBase::ALootlingsGameModeBase()
 {
-	PlayerStateClass = AMinionsPlayerState::StaticClass();
+	PlayerStateClass = ALootlingsPlayerState::StaticClass();
 }
 
-void AMinionsGameModeBase::BeginPlay()
+void ALootlingsGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -30,27 +31,27 @@ void AMinionsGameModeBase::BeginPlay()
 	
 	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
 	{
-		if (AMinionsPlayerState* PS = PC->GetPlayerState<AMinionsPlayerState>())
+		if (ALootlingsPlayerState* PS = PC->GetPlayerState<ALootlingsPlayerState>())
 		{
 			PS->RaidStats->StartRaid();
 		}
 	}
 
-    OnRaidEnded.AddDynamic(this, &AMinionsGameModeBase::HandleRaidEnded_TransferStash);
-	OnRaidEnded.AddDynamic(this, &AMinionsGameModeBase::HandleRaidEnded_CacheStats);
+    OnRaidEnded.AddDynamic(this, &ALootlingsGameModeBase::HandleRaidEnded_TransferStash);
+	OnRaidEnded.AddDynamic(this, &ALootlingsGameModeBase::HandleRaidEnded_CacheStats);
 }
 
-void AMinionsGameModeBase::NotifyRaidExtracted(APlayerCharacter* Player)
+void ALootlingsGameModeBase::NotifyRaidExtracted(APlayerCharacter* Player)
 {
 	EndRaid(Player, ERaidEndReason::Extracted);
 }
 
-void AMinionsGameModeBase::NotifyRaidFailed(APlayerCharacter* Player)
+void ALootlingsGameModeBase::NotifyRaidFailed(APlayerCharacter* Player)
 {
 	EndRaid(Player, ERaidEndReason::Killed);
 }
 
-void AMinionsGameModeBase::EndRaid(APlayerCharacter* Player, ERaidEndReason Reason)
+void ALootlingsGameModeBase::EndRaid(APlayerCharacter* Player, ERaidEndReason Reason)
 {
 	if (CurrentRaidPhase == ERaidPhase::Ended)
 	{
@@ -74,7 +75,7 @@ void AMinionsGameModeBase::EndRaid(APlayerCharacter* Player, ERaidEndReason Reas
 
 	if (Player)
 	{
-		if (AMinionsPlayerState* PS = Player->GetPlayerState<AMinionsPlayerState>())
+		if (ALootlingsPlayerState* PS = Player->GetPlayerState<ALootlingsPlayerState>())
 		{
 			PS->RaidStats->EndRaid(Reason);
 		}
@@ -83,7 +84,7 @@ void AMinionsGameModeBase::EndRaid(APlayerCharacter* Player, ERaidEndReason Reas
 	OnRaidEnded.Broadcast(Player, Reason);
 }
 
-void AMinionsGameModeBase::HandleRaidEnded_TransferStash(APlayerCharacter* Player, ERaidEndReason Reason)
+void ALootlingsGameModeBase::HandleRaidEnded_TransferStash(APlayerCharacter* Player, ERaidEndReason Reason)
 {
 	if (Reason != ERaidEndReason::Extracted)
 		return;
@@ -106,11 +107,11 @@ void AMinionsGameModeBase::HandleRaidEnded_TransferStash(APlayerCharacter* Playe
 	UE_LOG(LogTemp, Display, TEXT("[Raid] Stash transfer complete"));
 }
 
-void AMinionsGameModeBase::HandleRaidEnded_CacheStats(APlayerCharacter* Player, ERaidEndReason Reason)
+void ALootlingsGameModeBase::HandleRaidEnded_CacheStats(APlayerCharacter* Player, ERaidEndReason Reason)
 {
 	if (!Player) return;
 
-	AMinionsPlayerState* PS = Player->GetPlayerState<AMinionsPlayerState>();
+	ALootlingsPlayerState* PS = Player->GetPlayerState<ALootlingsPlayerState>();
 	if (!PS) return;
 
 	UStashSubsystem* Stash = GetGameInstance()->GetSubsystem<UStashSubsystem>();

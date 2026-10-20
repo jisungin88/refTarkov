@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Characters/MinionCharacterBase.h"
+#include "Characters/LootlingCharacterBase.h"
 #include "Loot/Interactable.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "EnemyCharacter.generated.h"
@@ -13,7 +13,7 @@ class UInventoryContainer;
 class ULootTableDataAsset;
 
 UCLASS(Abstract)
-class REFTARKOV_API AEnemyCharacter : public AMinionCharacterBase, public IInteractable
+class REFTARKOV_API AEnemyCharacter : public ALootlingCharacterBase, public IInteractable
 {
 	GENERATED_BODY()
 

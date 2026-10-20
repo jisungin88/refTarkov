@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Types/RaidTypes.h"
-#include "MinionsGameModeBase.generated.h"
+#include "LootlingsGameModeBase.generated.h"
 
 class APlayerCharacter;
 
@@ -13,12 +13,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRaidEnded,
 	APlayerCharacter*, Player, ERaidEndReason, Reason);
 
 UCLASS()
-class REFTARKOV_API AMinionsGameModeBase : public AGameModeBase
+class REFTARKOV_API ALootlingsGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
 public:
-	AMinionsGameModeBase();
+	ALootlingsGameModeBase();
 
 protected:
 	virtual void BeginPlay() override;

@@ -1,33 +1,33 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Characters/MinionCharacterBase.h"
+#include "Characters/LootlingCharacterBase.h"
 #include "Components/HealthComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-AMinionCharacterBase::AMinionCharacterBase()
+ALootlingCharacterBase::ALootlingCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 }
 
-void AMinionCharacterBase::BeginPlay()
+void ALootlingCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	if (HealthComp)
 	{
-		HealthComp->OnDeath.AddDynamic(this, &AMinionCharacterBase::HandleDeath);
+		HealthComp->OnDeath.AddDynamic(this, &ALootlingCharacterBase::HandleDeath);
 	}
 }
 
-bool AMinionCharacterBase::IsAlive() const
+bool ALootlingCharacterBase::IsAlive() const
 {
 	return HealthComp ? HealthComp->IsAlive() : false;
 }
 
-void AMinionCharacterBase::HandleDeath(UHealthComponent* HealthComponent, AController* Killer)
+void ALootlingCharacterBase::HandleDeath(UHealthComponent* HealthComponent, AController* Killer)
 {
 	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
 	{
