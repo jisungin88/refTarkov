@@ -2,8 +2,21 @@
 
 기록 규칙
 - 매 세션 끝에 사용자가 직접 한두 줄 추가
-- 형식: `## YYYY-MM-DD (Day N / Chapter N)`
+- 형식: `## YYYY-MM-DD (Day N / Phase N - 작업명)`
 - 본문: 한 일 / 막힌 점 / 다음 작업
+- 참고: 2026-10-20 이전 기록의 `Minions*` / `AMinionCharacterBase`는 `Lootlings*` / `ALootlingCharacterBase`로 이름이 바뀜
+
+---
+
+## 로드맵 현황
+
+| Phase | 목표 | 상태 |
+|---|---|---|
+| Phase 1 | 적 AI 완성 (CoverScore 연결 + 통합 테스트) + 미완성 정리 | **진행 중** |
+| Phase 2 | 인벤토리 UI (슬롯 리스트 + 루팅 창 UMG) | 대기 |
+| Phase 3 | 무기·장비 확장 (EquipmentComponent, 무기 픽업/교체, 아머) | 대기 |
+| Phase 4 | 월드·레이드 맵 (실제 맵, 루팅 랜덤 스폰, 복수 탈출 존) | 대기 |
+| Phase 5 | 폴리싱 (사운드, VFX, 애니메이션 Blendspace) | 대기 |
 
 ---
 
@@ -255,4 +268,32 @@
   - BT_Enemy_Shooter Flank 브랜치 — EQS Result Key `ShootingSpot` → `FlankPosition` 불일치 수정
   - BT_Enemy_Bruiser Flank 브랜치 — EQS Result Key `SelfActor` → `FlankPosition` 수정 + MeleeAttack 누락 추가
   - EQS Dot Test Mode — `Dot (3D)` → `Dot (2D)` (탑다운, Z축 제거)
-- 다음 작업: EnvQueryTest_CoverScore 에디터 연결 (EQS_ShooterPosition에 Cover Score 테스트 추가, TargetContext: EQSContext_TargetActor)
+- 다음 작업: **[Phase 1]** EnvQueryTest_CoverScore 에디터 연결 (EQS_ShooterPosition에 Cover Score 테스트 추가, TargetContext: EQSContext_TargetActor)
+
+---
+
+## 2026-10-20 (재개 / Phase 1 - CoverScore 재설계 + IP 교체)
+
+- 한 일:
+  - 포트폴리오화 작업 목록 정리 → 초점을 **적 AI + 인벤토리/데이터 설계**로 확정, 미완성 정리부터 진행
+  - **CoverScore 재설계**: 기존 HealthMultiplier 방식은 EQS min-max 정규화에서 상수배가 상쇄돼 효과 0 → 다중 높이 트레이스 엄폐도 테스트로 교체 (design_notes "엄폐 평가" / 변경 이력 참고)
+    - `UEnvQueryTest_CoverScore` — `ThreatContext` / `ThreatEyeHeight` / `SampleHeights`(90, 45) / `TraceChannel`, `LineTraceTestByChannel`, 위협 다수 시 최솟값, `FloatValueMin/Max` 바인딩(Filter 모드 지원), `Cost = High`
+  - **체력 → 엄폐 가중치**: `AEnemyAIController`에 `CoverWeightKey` / `MaxCoverWeight` / `HandleHealthChanged` / `UpdateCoverWeight` / `OnUnPossess` 언바인드 추가
+  - **IP 교체 Minions → Lootlings**: C++ 클래스 5개 + 파일 10개 이름 변경, `DefaultEngine.ini`에 `[CoreRedirects]` 5줄 추가, CLAUDE.md / design_notes 반영. 에디터 타깃 풀 빌드 성공
+    - 이름 바꾼 파일이 Adaptive Unity에서 빠지면서 숨어 있던 include 누락 2건이 드러남 → `LootlingsGameModeBase.cpp`에 `RaidStatsComponent.h`, `PlayerCharacter.cpp`에 `InventoryComponent.h` 추가
+  - 코드 리뷰 → 수정할 것 아래 2번
+- 막힌 점:
+  - EQS 정규화 때문에 "점수에 배수 곱하기"가 무의미 — 테스트 간 비중은 ScoringFactor로 조절해야 함
+  - 스폰된 AI는 Pawn BeginPlay보다 Possess가 먼저 → `HealthComponent::CurrentHealth`가 아직 0. 첫 값은 만피로 취급하고 BeginPlay 브로드캐스트가 덮어쓰게 처리
+- 다음 작업 (집에서 이어서 — 위에서부터 순서대로):
+  1. **pull 후**: 에디터 끈 상태로 `.uproject` 우클릭 → Generate Visual Studio project files → 풀 빌드 (파일 이름이 바뀌어서 필수). 에디터를 열고 BP_Enemy_* / BP_Player 등이 부모 클래스를 잃지 않았는지 확인
+  2. **리뷰 수정**
+     - `EnvQueryTest_CoverScore.cpp:18` — `QueryOwner->GetWorld()`가 null 체크보다 먼저 역참조 → `QueryInstance.World` 사용
+     - `EnvQueryTest_CoverScore.h:18` — 구분자 `//~ UEnvQueryTest interface` / `//~ End UEnvQueryTest interface`로 (컨벤션)
+     - `EnemyAIController.cpp` Tick — Leash 판정이 `#if WITH_EDITOR` 안에 있어 **패키지 빌드에서 Leash가 안 돎** → `DrawSightDebug()`만 남기고 Leash 블록은 밖으로
+     - `EnemyAIController.h:33` — meta `ToopTip` 오타 → `ToolTip` (지금은 툴팁이 안 뜸)
+     - `HealthComponent.h` — CP949 저장이라 한글 주석 깨짐 → UTF-8(BOM)으로 재저장
+  3. **에디터 (이름 교체 후)**: `BP_MinionsGameMode` / `BP_MinionsController` / `BP_MinionsCheatManager` → `BP_Lootlings*`로 Rename → `DefaultEngine.ini`의 `GlobalDefaultGameMode`와 `LootlingsPlayerController.cpp`의 `/Game/BP_MinionsCheatManager` 경로 갱신 → Content 폴더 Fix Up Redirectors
+  4. **CoverScore 연결**: `BB_Enemy`에 Float 키 `CoverWeight` → `EQS_ShooterPosition`에 Cover Score 테스트(Threat Context `EQSContext_TargetActor`, Score Only) → Scoring Factor를 쿼리 파라미터 `CoverWeight`로 바인딩 → BT Run EQS Query의 Query Config에서 BB 키 연결
+  5. **검증**: `AEQSTestingPawn`으로 점수 분포 확인 (벽 뒤 1 / 트인 곳 0 / 낮은 엄폐물 0.5), 체력 깎은 적이 엄폐 지점을 더 고르는지 플레이 확인
+  6. 이후: 재장전 탄약 소비 → 플레이어 사망 → Stash `USaveGame` → AI 통합 테스트·밸런싱 → Phase 1 체크포인트
