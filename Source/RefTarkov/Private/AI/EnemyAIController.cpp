@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "AI/EnemyAIController.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -13,6 +10,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "AI/AIAlertSubsystem.h"
 #include "AI/CombatDirectorSubsystem.h"
+#include "Components/HealthComponent.h"
 
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
 const FName AEnemyAIController::SuspicionTargetKey(TEXT("SuspicionTarget"));
@@ -20,6 +18,7 @@ const FName AEnemyAIController::InvestigateLocationKey(TEXT("InvestigateLocation
 const FName AEnemyAIController::HomeLocationKey(TEXT("HomeLocation"));
 const FName AEnemyAIController::ShouldReturnHomeKey(TEXT("ShouldReturnHome"));
 const FName AEnemyAIController::CombatRoleKey(TEXT("CombatRole"));
+const FName AEnemyAIController::CoverWeightKey(TEXT("CoverWeight"));
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -104,8 +103,25 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 			RunBehaviorTree(BT);
 		}
 	}
+
+	if (UHealthComponent* HealthComp = InPawn->FindComponentByClass<UHealthComponent>())
+	{
+		BoundHealthComp = HealthComp;
+		HealthComp->OnHealthChanged.AddDynamic(this, &AEnemyAIController::HandleHealthChanged);
+		UpdateCoverWeight(HealthComp);
+	}
 }
 
+void AEnemyAIController::OnUnPossess()
+{
+	if (UHealthComponent* HealthComp = BoundHealthComp.Get())
+	{
+		HealthComp->OnHealthChanged.RemoveDynamic(this, &AEnemyAIController::HandleHealthChanged);
+	}
+	BoundHealthComp.Reset();
+
+	Super::OnUnPossess();
+}
 
 void AEnemyAIController::HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
@@ -151,6 +167,23 @@ void AEnemyAIController::HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 		else if (bHearing)
 			Blackboard->ClearValue(InvestigateLocationKey);
 	}
+}
+
+void AEnemyAIController::HandleHealthChanged(UHealthComponent* HealthComp, float OldHealth, float NewHealth, AController* InstigatedBy)
+{
+	UpdateCoverWeight(HealthComp);
+}
+
+void AEnemyAIController::UpdateCoverWeight(const UHealthComponent* HealthComp)
+{
+	if (!Blackboard || !HealthComp)
+	{
+		return;
+	}
+
+	// 스폰 직후엔 HealthComponent::BeginPlay 전이라 CurrentHealth=0 → 만피로 취급, BeginPlay 브로드캐스트가 바로 덮어쓴다
+	const float HealthPercent = HealthComp->GetCurrentHealth() > 0.f ? HealthComp->GetHealthPercent() : 1.f;
+	Blackboard->SetValueAsFloat(CoverWeightKey, FMath::Lerp(1.f, MaxCoverWeight, 1.f - HealthPercent));
 }
 
 void AEnemyAIController::Tick(float DeltaTime)

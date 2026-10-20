@@ -1,11 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "EnemyAIController.generated.h"
+
+class UHealthComponent;
 
 UCLASS()
 class REFTARKOV_API AEnemyAIController : public AAIController
@@ -17,6 +17,7 @@ public:
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
@@ -27,6 +28,7 @@ public:
 	static const FName HomeLocationKey;
 	static const FName ShouldReturnHomeKey;
 	static const FName CombatRoleKey;
+	static const FName CoverWeightKey;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI|Perception", meta = (ClampMin = "0.1", ToopTip = "시야 인지 후 전투 확정까지 걸리는 초"))
 	float SuspicionDuration = 1.5f;
@@ -50,12 +52,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
 	TObjectPtr<class UAISenseConfig_Hearing> HearingConfig;
 
-protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI|LOD", meta = (ClampMin = "100.0"))
 	float LODNearRange = 1500.f;    // 이 거리 이내: 풀 틱
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI|LOD", meta = (ClampMin = "100.0"))
 	float LODFarRange = 3500.f;     // 이 거리 이상: 저빈도 틱
+
+	/** 체력 0%일 때 엄폐 점수 가중치 (100%일 때 1.0 */
+	UPROPERTY(EditDefaultsOnly, Category = "AI|Cover", meta = (ClampMin = "1.0"))
+	float MaxCoverWeight = 3.f;
 
 public:
 	UFUNCTION(BlueprintPure, Category = "AI")
@@ -67,6 +72,13 @@ public:
 private:
 	UFUNCTION()
 	void HandleTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+	UFUNCTION()
+	void HandleHealthChanged(UHealthComponent* HealthComp, float OldHealth, float NewHealth, AController* InstigatedBy);
+
+	void UpdateCoverWeight(const UHealthComponent* HealthComp);
+
+	TWeakObjectPtr<UHealthComponent> BoundHealthComp;
 
 public:
 	virtual void Tick(float DeltaTime) override;
