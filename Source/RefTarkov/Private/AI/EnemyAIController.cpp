@@ -11,6 +11,7 @@
 #include "AI/AIAlertSubsystem.h"
 #include "AI/CombatDirectorSubsystem.h"
 #include "Components/HealthComponent.h"
+#include "DrawDebugHelpers.h"
 
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
 const FName AEnemyAIController::SuspicionTargetKey(TEXT("SuspicionTarget"));
@@ -186,31 +187,42 @@ void AEnemyAIController::UpdateCoverWeight(const UHealthComponent* HealthComp)
 	Blackboard->SetValueAsFloat(CoverWeightKey, FMath::Lerp(1.f, MaxCoverWeight, 1.f - HealthPercent));
 }
 
+void AEnemyAIController::UpdateLeash()
+{
+	if (!Blackboard || !GetPawn())
+	{
+		return;
+	}
+
+	const FVector Home = Blackboard->GetValueAsVector(HomeLocationKey);
+	const float DistSq = FVector::DistSquared(GetPawn()->GetActorLocation(), Home);
+	const bool bTooFar = DistSq > FMath::Square(LeashRadius);
+
+	const bool bInThreatState = Blackboard->GetValueAsObject(TargetActorKey) != nullptr
+								|| Blackboard->GetValueAsObject(SuspicionTargetKey) != nullptr;
+
+	if (bTooFar && bInThreatState)
+	{
+		Blackboard->SetValueAsBool(ShouldReturnHomeKey, true);
+	}
+	else
+	{
+		Blackboard->ClearValue(ShouldReturnHomeKey);
+	}
+}
+
 void AEnemyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateLOD();
+	UpdateLeash();
 
-#if WITH_EDITOR
+#if ENABLE_DRAW_DEBUG
 	DrawSightDebug();
-	if (Blackboard && GetPawn())
-	{
-		const FVector Home = Blackboard->GetValueAsVector(HomeLocationKey);
-		const float DistSq = FVector::DistSquared(GetPawn()->GetActorLocation(), Home);
-		const bool bTooFar = DistSq > FMath::Square(LeashRadius);
-
-		const bool bInThreatState = Blackboard->GetValueAsObject(TargetActorKey) != nullptr
-								|| Blackboard->GetValueAsObject(SuspicionTargetKey) != nullptr;
-
-		if (bTooFar && bInThreatState)
-			Blackboard->SetValueAsBool(ShouldReturnHomeKey, true);
-		else
-			Blackboard->ClearValue(ShouldReturnHomeKey);
-	}
 #endif
 }
 
-#if WITH_EDITOR
+#if ENABLE_DRAW_DEBUG
 void AEnemyAIController::DrawSightDebug() const
 {
 	if (!SightConfig || !GetPawn()) return;

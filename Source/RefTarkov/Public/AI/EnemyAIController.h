@@ -30,7 +30,7 @@ public:
 	static const FName CombatRoleKey;
 	static const FName CoverWeightKey;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI|Perception", meta = (ClampMin = "0.1", ToopTip = "시야 인지 후 전투 확정까지 걸리는 초"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI|Perception", meta = (ClampMin = "0.1", ToolTip = "시야 인지 후 전투 확정까지 걸리는 초"))
 	float SuspicionDuration = 1.5f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI|Leash", meta = (ClampMin = "100.0"))
@@ -78,13 +78,15 @@ private:
 
 	void UpdateCoverWeight(const UHealthComponent* HealthComp);
 
+	void UpdateLeash();
+
 	TWeakObjectPtr<UHealthComponent> BoundHealthComp;
 
 public:
 	virtual void Tick(float DeltaTime) override;
 	void UpdateLOD();
 
-#if WITH_EDITOR
+#if ENABLE_DRAW_DEBUG
 protected:
 	/** 시야 콘 디버그 그리기. WITH_EDITOR에서만. */
 	void DrawSightDebug() const;
