@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,18 +8,18 @@
 
 /**
  * Health changed broadcast.
- * @param HealthComp     ÀÌ ÄÄÆ÷³ÍÆ®
- * @param OldHealth      º¯°æ Àü Ã¼·Â
- * @param NewHealth      º¯°æ ÈÄ Ã¼·Â
- * @param InstigatedBy   º¯°æÀ» À¯¹ßÇÑ ÄÁÆ®·Ñ·¯ (ÈúÀÇ °æ¿ì nullptr °¡´É)
+ * @param HealthComp     ì´ ì»´í¬ë„ŒíŠ¸
+ * @param OldHealth      ë³€ê²½ ì „ ì²´ë ¥
+ * @param NewHealth      ë³€ê²½ í›„ ì²´ë ¥
+ * @param InstigatedBy   ë³€ê²½ì„ ìœ ë°œí•œ ì»¨íŠ¸ë¡¤ëŸ¬ (íì˜ ê²½ìš° nullptr ê°€ëŠ¥)
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChangedSignature,
 	UHealthComponent*, HealthComp, float, OldHealth, float, NewHealth, AController*, InstigatedBy);
 
 /**
  * Death broadcast.
- * @param HealthComp     ÀÌ ÄÄÆ÷³ÍÆ®
- * @param Killer         Å³·¯ ÄÁÆ®·Ñ·¯ (¿ùµå¿¡ ÀÇÇÑ Á×À½ÀÌ¸é nullptr)
+ * @param HealthComp     ì´ ì»´í¬ë„ŒíŠ¸
+ * @param Killer         í‚¬ëŸ¬ ì»¨íŠ¸ë¡¤ëŸ¬ (ì›”ë“œì— ì˜í•œ ì£½ìŒì´ë©´ nullptr)
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeathSignature,
 	UHealthComponent*, HealthComp, AController*, Killer);

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -10,8 +10,8 @@
 class UHealthComponent;
 
 /**
- * ÇÃ·¹ÀÌ¾î¿Í ÀûÀÌ °øÀ¯ÇÏ´Â °øÅë º£ÀÌ½º.
- * ÀÎ½ºÅÏ½ºÈ­ ºÒ°¡(Abstract). BP¿¡¼­ »õ ÀÎ½ºÅÏ½º ¸¸µé¸é ¿¡µğÅÍ°¡ ¸·´Â´Ù.
+ * í”Œë ˆì´ì–´ì™€ ì ì´ ê³µìœ í•˜ëŠ” ê³µí†µ ë² ì´ìŠ¤.
+ * ì¸ìŠ¤í„´ìŠ¤í™” ë¶ˆê°€(Abstract). BPì—ì„œ ìƒˆ ì¸ìŠ¤í„´ìŠ¤ ë§Œë“¤ë©´ ì—ë””í„°ê°€ ë§‰ëŠ”ë‹¤.
  */
 UCLASS(Abstract)
 class REFTARKOV_API ALootlingCharacterBase : public ACharacter, public IGenericTeamAgentInterface
@@ -28,7 +28,7 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Team", meta = (ClampMin = "0", ClampMax = "254"))
-	uint8 TeamId = 1;  // 0Àº ÇÃ·¹ÀÌ¾î, 254´Â "¸ğµç ÆÀ". ±âº»°ªÀº 1 (Àû).
+	uint8 TeamId = 1;  // 0ì€ í”Œë ˆì´ì–´, 254ëŠ” "ëª¨ë“  íŒ€". ê¸°ë³¸ê°’ì€ 1 (ì ).
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UHealthComponent> HealthComp;

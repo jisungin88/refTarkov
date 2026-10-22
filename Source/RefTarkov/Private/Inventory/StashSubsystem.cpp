@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Inventory/StashSubsystem.h"
 #include "Inventory/InventoryContainer.h"
 #include "Inventory/Items/ItemInstance.h"
@@ -50,21 +47,17 @@ bool UStashSubsystem::TryAddItem(const UItemDataAsset* ItemDef, int32 Quantity, 
 
 bool UStashSubsystem::RemoveItemAt(int32 SlotIndex, int32 Quantity)
 {
-    // TODO: 한 줄 forward
 	return Container ? Container->RemoveItemAt(SlotIndex, Quantity) : false;
 }
 
 const TArray<FItemInstance>& UStashSubsystem::GetSlots() const
 {
-    // TODO: Container 있으면 Container->GetSlots(), 없으면 static empty 반환
-    //   힌트: static const TArray<FItemInstance> Empty;  로컬 static OK
 	static const TArray<FItemInstance> Empty;
 	return Container ? Container->GetSlots() : Empty;
 }
 
 bool UStashSubsystem::ExpandSlots(int32 NewMaxSlots)
 {
-    // TODO: Container->SetMaxSlots(NewMaxSlots) forward
 	return Container ? Container->SetMaxSlots(NewMaxSlots) : false;
 }
 

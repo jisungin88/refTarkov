@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -11,7 +9,7 @@ UCLASS(Config = Game)
 class REFTARKOV_API UStashSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-	
+
 protected:
 	UPROPERTY()
 	TObjectPtr<class UInventoryContainer> Container;
