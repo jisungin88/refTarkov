@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "LootlingsPlayerController.h"
 #include "Managers/LootlingsCheatManager.h"
 #include "UObject/ConstructorHelpers.h"
@@ -19,7 +16,7 @@ ALootlingsPlayerController::ALootlingsPlayerController()
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 
-	static ConstructorHelpers::FClassFinder<UCheatManager> CheatBPClass(TEXT("/Game/BP_MinionsCheatManager"));
+	static ConstructorHelpers::FClassFinder<UCheatManager> CheatBPClass(TEXT("/Game/BP_LootlingsCheatManager"));
 	if (CheatBPClass.Succeeded())
 	{
 		CheatClass = CheatBPClass.Class;
