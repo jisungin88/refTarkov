@@ -1,14 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Characters/EnemyCharacter.h"
 #include "ShooterEnemyCharacter.generated.h"
 
-/**
- * 
- */
+class AWeaponBase;
+
 UCLASS()
 class REFTARKOV_API AShooterEnemyCharacter : public AEnemyCharacter
 {
@@ -17,6 +14,9 @@ class REFTARKOV_API AShooterEnemyCharacter : public AEnemyCharacter
 public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	bool PerformRangedAttack(AActor* Target);
+
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	AWeaponBase* GetCurrentWeapon() const { return CurrentWeapon; }
 
 protected:
 	virtual void BeginPlay() override;

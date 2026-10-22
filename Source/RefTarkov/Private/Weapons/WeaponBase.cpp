@@ -21,7 +21,7 @@ AWeaponBase::AWeaponBase()
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// ensure 실패해도 게임은 계속 돌아간다(크래시 X), 다만 발사는 안 됨.
 	if (!ensureMsgf(WeaponData, TEXT("AWeaponBase %s has no WeaponData assigned"), *GetName()))
 	{
@@ -31,7 +31,7 @@ void AWeaponBase::BeginPlay()
 	CurrentAmmoInMag = WeaponData->MagSize;
 }
 
-bool AWeaponBase::CanFire() const 
+bool AWeaponBase::CanFire() const
 {
 	if (!WeaponData) return false;
 	if (bIsReloading) return false;
@@ -49,10 +49,10 @@ bool AWeaponBase::CanFire() const
 	return true;
 }
 
-void AWeaponBase::Fire(const FVector& TargetLocation)
+bool AWeaponBase::Fire(const FVector& TargetLocation)
 {
 	if (!CanFire())
-		return;
+		return false;
 
 	LastFireTime = GetWorld()->GetTimeSeconds();
 	--CurrentAmmoInMag;
@@ -79,6 +79,8 @@ void AWeaponBase::Fire(const FVector& TargetLocation)
 		0.f,                  // Max Range (0 = HearingConfig.HearingRange 사용)
 		NAME_None
 	);
+
+	return true;
 }
 
 void AWeaponBase::PerformFireTrace(const FVector& Start, const FVector& End)
@@ -102,7 +104,7 @@ void AWeaponBase::PerformFireTrace(const FVector& Start, const FVector& End)
 			OwnerController, this, UDamageType::StaticClass());
 	}
 
-	DrawDebugLine(GetWorld(), Start, ImpactPoint, 
+	DrawDebugLine(GetWorld(), Start, ImpactPoint,
 		bHit ? FColor::Green : FColor::Red, false, 0.1f, 0, 2);
 }
 

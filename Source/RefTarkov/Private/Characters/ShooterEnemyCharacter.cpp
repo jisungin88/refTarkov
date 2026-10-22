@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Characters/ShooterEnemyCharacter.h"
 #include "Weapons/WeaponBase.h"
 
@@ -38,6 +35,5 @@ bool AShooterEnemyCharacter::PerformRangedAttack(AActor* Target)
 		return false;
 	}
 
-	CurrentWeapon->Fire(Target->GetActorLocation());
-	return true;
+	return CurrentWeapon->Fire(Target->GetActorLocation());
 }

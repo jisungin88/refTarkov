@@ -57,8 +57,6 @@ void UBTTask_EvaluateSuspicion::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 
 	if (Memory->ElapsedTime > Duration)
 	{
-		AIC->ClearFocus(EAIFocusPriority::Gameplay);
-
 		if (AActor* SuspicionActor = Cast<AActor>(BB->GetValueAsObject(SuspicionTargetKey.SelectedKeyName)))
 		{
 			if (EnemyAIC)

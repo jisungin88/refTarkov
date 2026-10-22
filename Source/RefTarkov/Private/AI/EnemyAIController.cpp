@@ -262,6 +262,7 @@ void AEnemyAIController::EnterCombat(AActor* Target)
 	if (!Blackboard || !Target)
 		return;
 	Blackboard->SetValueAsObject(TargetActorKey, Target);
+	SetFocus(Target, EAIFocusPriority::Gameplay);
 
 	if (UCombatDirectorSubsystem* Director = GetWorld()->GetSubsystem<UCombatDirectorSubsystem>())
 		Director->RegisterCombatant(this);
@@ -274,6 +275,7 @@ void AEnemyAIController::ExitCombat()
 		Blackboard->ClearValue(TargetActorKey);
 		Blackboard->ClearValue(SuspicionTargetKey);
 	}
+	ClearFocus(EAIFocusPriority::Gameplay);
 
 	if (UCombatDirectorSubsystem* Director = GetWorld()->GetSubsystem<UCombatDirectorSubsystem>())
 	{

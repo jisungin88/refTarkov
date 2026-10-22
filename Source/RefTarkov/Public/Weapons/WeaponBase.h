@@ -12,14 +12,13 @@ UCLASS()
 class REFTARKOV_API AWeaponBase : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	AWeaponBase();
 
 protected:
 	virtual void BeginPlay() override;
 
-protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<class UStaticMeshComponent> WeaponMesh;
 
@@ -40,7 +39,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	virtual void Fire(const FVector& TargetLocation);
+	virtual bool Fire(const FVector& TargetLocation);
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon|Ammo")
 	virtual void StartReload();
