@@ -88,7 +88,7 @@ void UBTTask_ShootAtPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 		FShootMemory* Memory = reinterpret_cast<FShootMemory*>(NodeMemory);
 		if (--Memory->ShotsRemaining <= 0)
 		{
-			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		}
 	}
 }
