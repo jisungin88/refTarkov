@@ -15,7 +15,7 @@ UEnvQueryTest_CoverScore::UEnvQueryTest_CoverScore()
 void UEnvQueryTest_CoverScore::RunTest(FEnvQueryInstance& QueryInstance) const
 {
 	UObject* QueryOwner = QueryInstance.Owner.Get();
-	UWorld* World = QueryOwner->GetWorld();
+	UWorld* World = QueryInstance.World;
 	if (!QueryOwner || !World || SampleHeights.Num() == 0)
 	{
 		return;

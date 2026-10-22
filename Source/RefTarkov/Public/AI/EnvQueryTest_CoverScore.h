@@ -15,10 +15,11 @@ public:
 	UEnvQueryTest_CoverScore();
 
 protected:
-	// Interface
+	//~ UEnvQueryTest interface
 	virtual void RunTest(FEnvQueryInstance& QueryInstance) const override;
 	virtual FText GetDescriptionTitle() const override;
 	virtual FText GetDescriptionDetails() const override;
+	//~ End UEnvQueryTest interface
 
 	/** 위협 위치 */
 	UPROPERTY(EditDefaultsOnly, Category = "Cover")
